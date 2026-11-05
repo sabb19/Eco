@@ -6,7 +6,7 @@ Funziona interamente sul telefono. Le immagini non vengono salvate né inviate.
 
 ## Installare l'app
 
-Apri `https://sabb19.github.io/eco/` sul telefono.
+Apri `https://sabb19.github.io/Eco/` sul telefono.
 
 - **iPhone**: apri il link in Safari, tocca Condividi e poi "Aggiungi a Home".
 - **Android**: apri il link in Chrome e tocca "Installa app" (oppure il menu ⋮ e poi "Aggiungi a schermata Home").
