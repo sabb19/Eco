@@ -1,0 +1,1029 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0c">
+<meta name="description" content="Guida per persone cieche e ipovedenti: avvisa dei pericoli con vibrazione, suono e una parola.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Eco Fidato">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>Eco Fidato</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Atkinson+Hyperlegible+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: user mode = two full-height touch halves (high contrast); jury mode = scene + metrics in a two-column console */
+:root {
+  --bg: #f6f6f2;
+  --surface: #ffffff;
+  --fg: #111214;
+  --muted: #4a4d55;
+  --line: #d6d7dc;
+  --accent: #1f4fd1;
+  --seen: #0b7a52;
+  --maybe: #b26a00;
+  --lost: #7b7f88;
+  --danger: #c4161c;
+  --hi-bg: #000000;
+  --hi-fg: #ffe14a;
+  --hi-fg2: #ffffff;
+  --font: "Atkinson Hyperlegible", "Verdana", "Segoe UI", system-ui, sans-serif;
+  --mono: "Atkinson Hyperlegible Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #101114; --surface: #181a1f; --fg: #f1f1ee; --muted: #a6a9b2; --line: #2c2f37;
+    --accent: #7ea2ff; --seen: #3ccf91; --maybe: #ffb547; --lost: #8b8f98; --danger: #ff5a5f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #101114; --surface: #181a1f; --fg: #f1f1ee; --muted: #a6a9b2; --line: #2c2f37;
+  --accent: #7ea2ff; --seen: #3ccf91; --maybe: #ffb547; --lost: #8b8f98; --danger: #ff5a5f;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 16px; line-height: 1.45; }
+button, select, input { font: inherit; }
+:focus-visible { outline: 4px solid var(--accent); outline-offset: 2px; }
+[hidden] { display: none !important; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---------- user mode: native-style mobile app, dark high contrast ---------- */
+#user { height: 100%; --a-bg:#0a0a0c; --a-card:#17181c; --a-card2:#1f2026; --a-line:#2c2d34; --a-fg:#f5f5f7; --a-mut:#b4b4bd; --a-y:#ffd60a; --a-g:#30d158; --a-o:#ff9f0a; --a-r:#ff453a;
+  min-height: 100%; background: var(--a-bg); color: var(--a-fg); display: flex; justify-content: center; }
+.app { position: relative; width: 100%; max-width: 440px; height: 100vh; height: 100dvh; display: flex; flex-direction: column; background: var(--a-bg); }
+@media (min-width: 600px) {
+  #user { background: radial-gradient(1200px 600px at 50% -10%, #23242b, #0b0b0e 70%); padding: 28px 16px; align-items: center; }
+  .app { height: min(880px, calc(100dvh - 56px)); border-radius: 44px; border: 10px solid #000; outline: 1px solid #3a3b42; box-shadow: 0 30px 80px #000a; overflow: hidden; }
+}
+.appbar { display: flex; align-items: center; gap: 12px; padding: max(14px, env(safe-area-inset-top, 0px)) max(18px, env(safe-area-inset-right, 0px)) 6px max(18px, env(safe-area-inset-left, 0px)); }
+.appicon { width: 40px; height: 40px; border-radius: 11px; background: var(--a-y); display: grid; place-items: center; flex: none; }
+.appicon svg { width: 26px; height: 26px; }
+.apptitle { font-weight: 700; font-size: 22px; letter-spacing: -.01em; }
+.screen { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; padding: 8px max(18px, env(safe-area-inset-right, 0px)) 18px max(18px, env(safe-area-inset-left, 0px)); }
+.screen > * { flex-shrink: 0; }
+.card { background: var(--a-card); border-radius: 22px; padding: 16px 18px; border: 2px solid transparent; transition: border-color .15s, background .15s; }
+.card.l1 { border-color: var(--a-r); background: #2a1214; }
+.card.l2 { border-color: var(--a-y); }
+.cardhead { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 6px; }
+.eyebrow { font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--a-mut); }
+.chip { display: inline-flex; align-items: center; gap: 7px; padding: 5px 11px; border-radius: 999px; background: var(--a-card2); font-size: 14px; font-weight: 700; }
+.chip i { width: 9px; height: 9px; border-radius: 50%; background: var(--a-g); }
+.chip.mid i { background: var(--a-o); } .chip.bad i { background: var(--a-r); }
+#user .status { margin: 0; font-size: clamp(21px, 5.8vw, 26px); font-weight: 700; line-height: 1.25; min-height: 2.5em; color: var(--a-fg); }
+.hero { display: flex; flex-direction: column; align-items: center; padding: 6px 0 0; }
+.gobtn { position: relative; width: min(54vw, 210px); aspect-ratio: 1; border-radius: 50%; border: 0; cursor: pointer;
+  background: var(--a-card); color: var(--a-y); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  box-shadow: inset 0 0 0 5px var(--a-y), 0 12px 40px #0008; }
+.gobtn svg { width: 64px; height: 64px; }
+.gobtn b { font-size: clamp(24px, 6.6vw, 30px); line-height: 1.1; }
+.gobtn .ic-stop { display: none; }
+.gobtn.on { background: var(--a-y); color: #000; box-shadow: 0 0 0 0 #ffd60a88, 0 12px 40px #0008; animation: ring 2.2s ease-out infinite; }
+.gobtn.on .ic-play { display: none; } .gobtn.on .ic-stop { display: block; }
+@keyframes ring { 0% { box-shadow: 0 0 0 0 #ffd60a77, 0 12px 40px #0008; } 100% { box-shadow: 0 0 0 26px #ffd60a00, 0 12px 40px #0008; } }
+.gobtn:active { transform: scale(.97); }
+.herosub { margin: 10px 0 0; color: var(--a-mut); font-size: 17px; text-align: center; max-width: 30ch; }
+.tiles { display: grid; gap: 10px; }
+.tile { display: flex; align-items: center; gap: 14px; width: 100%; min-height: 84px; padding: 14px 16px; border-radius: 20px; border: 0; cursor: pointer;
+  background: var(--a-card); color: var(--a-fg); text-align: left; }
+.tile .ti { width: 52px; height: 52px; border-radius: 15px; background: var(--a-card2); color: var(--a-y); display: grid; place-items: center; flex: none; }
+.tile .ti svg { width: 28px; height: 28px; }
+.tile .tt { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.tile b { font-size: 21px; line-height: 1.2; }
+.tile span.d { font-size: 16px; color: var(--a-mut); }
+.tile .chev { color: #6b6c75; flex: none; width: 20px; height: 20px; }
+.tile.on { background: var(--a-y); color: #000; } .tile.on span.d { color: #222; } .tile.on .ti { background: #0000001f; color: #000; } .tile.on .chev { color: #000; }
+.tile:active { transform: scale(.985); background: var(--a-card2); }
+.foot { margin: 2px 4px 0; color: var(--a-mut); font-size: 15px; text-align: center; }
+.navtitle { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.navtitle h2 { margin: 6px 0 0; font-size: 32px; letter-spacing: -.01em; }
+.group { background: var(--a-card); border-radius: 20px; overflow: hidden; }
+.grouplabel { margin: 10px 6px -4px; }
+.row { display: flex; align-items: center; gap: 14px; width: 100%; min-height: 72px; padding: 12px 16px; border: 0; background: none; color: var(--a-fg); text-align: left; cursor: pointer; }
+.row + .row { border-top: 1px solid var(--a-line); }
+.row .ti { width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; flex: none; color: #000; }
+.row .ti svg { width: 22px; height: 22px; }
+.row .tt { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.row .tt b { font-size: 19px; } .row .tt span { font-size: 15px; color: var(--a-mut); }
+.row .val { color: var(--a-y); font-weight: 700; font-size: 17px; text-align: right; max-width: 9em; }
+.switch { width: 56px; height: 34px; border-radius: 999px; background: #3a3b42; position: relative; flex: none; transition: background .15s; }
+.switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 28px; height: 28px; border-radius: 50%; background: #fff; transition: transform .15s; }
+[aria-pressed="true"] > .switch { background: var(--a-g); } [aria-pressed="true"] > .switch::after { transform: translateX(22px); }
+.info { display: flex; gap: 12px; padding: 14px 16px; font-size: 16px; color: var(--a-mut); } .info + .info { border-top: 1px solid var(--a-line); }
+.info svg { width: 22px; height: 22px; flex: none; color: var(--a-y); margin-top: 1px; }
+.primarybtn { width: 100%; min-height: 60px; border-radius: 18px; border: 0; background: var(--a-y); color: #000; font-weight: 700; font-size: 20px; cursor: pointer; }
+.tabbar { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--a-line); background: #111215f2;
+  padding: 6px max(8px, env(safe-area-inset-right, 0px)) max(8px, env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px)); }
+.tab { display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 60px; justify-content: center; border: 0; background: none; color: #8e8e96; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 12px; }
+.tab svg { width: 26px; height: 26px; }
+.tab[aria-current="page"] { color: var(--a-y); }
+#user :focus-visible { outline: 4px solid var(--a-y); outline-offset: 3px; }
+#flash { position: fixed; inset: 0; pointer-events: none; border: 0 solid var(--danger); transition: border-width .08s; z-index: 5; }
+#flash.l1 { border-width: 14px; }
+#flash.l2 { border-width: 6px; border-color: #ffd60a; }
+@media (prefers-reduced-motion: reduce) { #flash, .card, .switch, .switch::after { transition: none; } .gobtn.on { animation: none; } .gobtn:active, .tile:active { transform: none; } }
+
+/* ---------- jury mode ---------- */
+#jury { padding-block: 16px 32px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); max-width: 1180px; margin: 0 auto; }
+.jhead { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; }
+.jhead h1 { margin: 0; font-size: 24px; text-wrap: balance; }
+.jhead p { margin: 2px 0 0; color: var(--muted); max-width: 60ch; }
+.btn { min-height: 44px; padding: 8px 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+:root[data-theme="dark"] .btn.primary { color: #0b0c10; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.primary { color: #0b0c10; } }
+.grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 16px; }
+@media (max-width: 860px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; min-width: 0; }
+.panel h2 { margin: 0 0 10px; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.stage { position: relative; background: #000; border-radius: 10px; overflow: hidden; }
+.stage canvas { display: block; width: 100%; height: auto; max-width: 100%; }
+.saying { margin-top: 10px; padding: 12px 14px; border-radius: 10px; border: 2px solid var(--line); font-size: 20px; font-weight: 700; min-height: 1.6em; }
+.saying.l1 { border-color: var(--danger); color: var(--danger); }
+.saying.l2 { border-color: var(--maybe); }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; align-items: center; }
+.seg { display: flex; flex-wrap: wrap; flex: 1 1 100%; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.seg button { flex: 1 1 auto; border: 0; border-right: 1px solid var(--line); background: var(--surface); color: var(--fg); min-height: 44px; padding: 8px 12px; cursor: pointer; }
+.seg button:last-child { border-right: 0; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+.toggle { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 6px; cursor: pointer; }
+.toggle input { width: 22px; height: 22px; }
+.note { color: var(--muted); font-size: 14px; margin: 8px 0 0; }
+.note.warn { color: var(--danger); }
+.metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.metric { border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
+.metric .k { font-size: 12px; color: var(--muted); letter-spacing: .04em; }
+.metric .v { font-family: var(--mono); font-size: 22px; font-variant-numeric: tabular-nums; }
+.pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-weight: 700; font-size: 14px; border: 2px solid currentColor; }
+.pill.good { color: var(--seen); } .pill.mid { color: var(--maybe); } .pill.bad { color: var(--danger); }
+.legend { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; font-size: 14px; }
+.legend li { display: flex; gap: 8px; align-items: center; }
+.sw { width: 26px; height: 0; border-top: 3px solid; flex: none; }
+.sw.seen { border-color: var(--seen); } .sw.maybe { border-color: var(--maybe); border-top-style: dashed; } .sw.lost { border-color: var(--lost); border-top-style: dotted; } .sw.danger { border-color: var(--danger); }
+.log { list-style: none; margin: 0; padding: 0; max-height: 240px; overflow: auto; font-family: var(--mono); font-size: 13px; }
+.log li { padding: 5px 0; border-bottom: 1px solid var(--line); display: flex; gap: 10px; }
+.log time { color: var(--muted); flex: none; font-variant-numeric: tabular-nums; }
+.log .l1 { color: var(--danger); font-weight: 600; }
+.stack { display: grid; gap: 16px; }
+table.lv { width: 100%; border-collapse: collapse; font-size: 14px; }
+table.lv td, table.lv th { text-align: left; padding: 6px 4px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.tablewrap { overflow-x: auto; }
+</style>
+
+</head>
+<body>
+<div id="flash" aria-hidden="true"></div>
+
+<!-- ================= USER MODE ================= -->
+<main id="user" aria-label="Eco Fidato">
+ <div class="app">
+  <header class="appbar"><span class="appicon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="2.2" fill="#000"/><path d="M7.8 7.8a6 6 0 0 0 0 8.4M16.2 7.8a6 6 0 0 1 0 8.4M4.9 4.9a10 10 0 0 0 0 14.2M19.1 4.9a10 10 0 0 1 0 14.2"/></svg></span><span class="apptitle">Eco Fidato</span></header>
+
+  <div class="screen" id="mainPads">
+    <section class="card" id="uCard" aria-label="Stato">
+      <div class="cardhead"><span class="eyebrow">Adesso</span><span class="chip" id="uHealth"><i aria-hidden="true"></i><span id="uHealthT">Vista buona</span></span></div>
+      <p class="status" id="uStatus" aria-live="polite">Pronto. Tocca "Avvia guida" per iniziare.</p>
+    </section>
+
+    <div class="hero">
+      <button class="gobtn" id="padGo" type="button" aria-pressed="false" aria-describedby="goDesc">
+        <svg class="ic-play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>
+        <svg class="ic-stop" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6.5" y="6.5" width="11" height="11" rx="2"/></svg>
+        <b id="goLabel">Avvia guida</b>
+      </button>
+      <p class="herosub" id="goDesc">Ti avvisa solo dei pericoli</p>
+    </div>
+
+    <div class="tiles">
+      <button class="tile" id="padWhat" type="button" aria-describedby="whatDesc"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></span><span class="tt"><b>Cosa c'è?</b><span class="d" id="whatDesc">Descrive gli oggetti intorno</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+      <button class="tile" id="padWhere" type="button" aria-describedby="whereDesc"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.6"/></svg></span><span class="tt"><b>Dove sono?</b><span class="d" id="whereDesc">Via, direzione, punto segnato</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+      <button class="tile" id="padBeacon" type="button" aria-pressed="false" aria-describedby="beaconDesc"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22V4M5 4h11l-2 4 2 4H5"/></svg></span><span class="tt"><b id="beaconLabel">Segna questo punto</b><span class="d" id="beaconDesc">Un suono ti riporta qui</span></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    </div>
+    <p class="foot">Usalo insieme al bastone o al cane guida.</p>
+  </div>
+
+  <div class="screen" id="prefs" hidden aria-label="Impostazioni">
+    <div class="navtitle"><h2>Impostazioni</h2></div>
+    <p class="eyebrow grouplabel">Avvisi</p>
+    <div class="group">
+      <button class="row" id="prefRate" type="button"><span class="ti" style="background:#ffd60a" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 8v8M20 11v2"/></svg></span><span class="tt"><b>Voce</b><span>Normale, veloce o lenta</span></span><span class="val" id="prefRateL">Voce normale</span></button>
+      <button class="row" id="prefPrud" type="button"><span class="ti" style="background:#ff9f0a" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg></span><span class="tt"><b>Prudenza</b><span>Prudenti: avvisa prima</span></span><span class="val" id="prefPrudL">Avvisi normali</span></button>
+      <button class="row" id="prefVib" type="button" aria-pressed="true"><span class="ti" style="background:#30d158" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="3" width="8" height="18" rx="2"/><path d="M4 8v8M20 8v8"/></svg></span><span class="tt"><b>Vibrazione</b><span id="prefVibL">Vibrazione sì</span></span><span class="switch" aria-hidden="true"></span></button>
+    </div>
+    <p class="eyebrow grouplabel">Sicurezza</p>
+    <div class="group">
+      <div class="info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 4a3 3 0 0 1 6 0v17"/></svg><span>Non sostituisce il bastone o il cane guida. Quando non vede bene, te lo dice.</span></div>
+      <div class="info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9a5 5 0 0 1 10 0c0 3-3 4-3 7a3 3 0 0 1-6 0"/></svg><span>Usa cuffie aperte o a conduzione ossea per sentire la strada.</span></div>
+      <div class="info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>Le immagini restano sul telefono e non vengono salvate.</span></div>
+    </div>
+    <button class="primarybtn" id="prefClose" type="button">Fatto</button>
+    <p class="foot" id="appVer">Eco Fidato</p>
+  </div>
+
+  <nav class="tabbar" aria-label="Sezioni">
+    <button class="tab" id="tabHome" type="button" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg><span>Guida</span></button>
+    <button class="tab" id="toPrefs" type="button" aria-expanded="false" aria-controls="prefs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg><span>Impostazioni</span></button>
+    <button class="tab" id="toJury" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Giuria</span></button>
+  </nav>
+ </div>
+</main>
+
+<!-- ================= JURY MODE ================= -->
+<div id="jury" hidden>
+  <div class="jhead">
+    <div>
+      <h1>Eco Fidato · console di prova</h1>
+      <p>Cosa vede il sistema, quanto si fida e cosa comunica all'utente. La scena simulata gira senza fotocamera.</p>
+    </div>
+    <button class="btn" id="toUser" type="button">Torna alla modalità utente</button>
+  </div>
+
+  <div class="grid">
+    <section class="panel" aria-label="Scena">
+      <h2>Scena</h2>
+      <div class="stage"><canvas id="view" width="640" height="480" aria-label="Vista della scena con gli oggetti rilevati"></canvas></div>
+      <div class="saying" id="saying" aria-live="polite">In silenzio: nessun pericolo.</div>
+      <div class="controls">
+        <div class="seg" role="group" aria-label="Sorgente video">
+          <button type="button" id="srcSim" aria-pressed="true">Simulazione</button>
+          <button type="button" id="srcVideo" aria-pressed="false">Video</button>
+          <button type="button" id="srcCam" aria-pressed="false">Fotocamera</button>
+        </div>
+        <button class="btn primary" id="jGo" type="button">Avvia guida</button>
+        <button class="btn" id="jWhat" type="button">Cosa c'è?</button>
+      </div>
+      <div class="controls">
+        <label class="toggle"><input type="checkbox" id="optDark"> Simula buio</label>
+        <label class="toggle"><input type="checkbox" id="optCover"> Copri la camera</label>
+        <label class="toggle"><input type="checkbox" id="optBeat" checked> Battito di presenza</label>
+        <input type="file" id="fileIn" accept="video/*" class="sr" aria-label="Carica un video">
+      </div>
+      <p class="note" id="srcNote">Simulazione: un pedone passa dietro un'edicola, poi una bici arriva verso l'utente.</p>
+    </section>
+
+    <div class="stack">
+      <section class="panel" aria-label="Affidabilità e metriche">
+        <h2>Affidabilità e metriche</h2>
+        <p style="margin:0 0 10px">Stato visione: <span class="pill good" id="health">Buona</span></p>
+        <div class="metrics">
+          <div class="metric"><div class="k">FPS elaborazione</div><div class="v" id="mFps">–</div></div>
+          <div class="metric"><div class="k">Inferenza (ms)</div><div class="v" id="mInf">–</div></div>
+          <div class="metric"><div class="k">Pipeline fino al feedback (ms)</div><div class="v" id="mLat">–</div></div>
+          <div class="metric"><div class="k">Tracce attive</div><div class="v" id="mTracks">–</div></div>
+          <div class="metric"><div class="k">Recuperi dopo occlusione</div><div class="v" id="mRec">–</div></div>
+          <div class="metric"><div class="k">Tempo medio di ri-aggancio</div><div class="v" id="mRecT">–</div></div>
+          <div class="metric"><div class="k">Cambi di ID (simulazione)</div><div class="v" id="mSw">–</div></div>
+          <div class="metric"><div class="k">Pericolo principale</div><div class="v" id="mTop" style="font-size:16px">–</div></div>
+        </div>
+        <p class="note">La latenza mostrata esclude l'uscita audio del telefono. Distanze stimate dall'altezza del riquadro: indicative.</p>
+      </section>
+
+      <section class="panel" aria-label="Perché è fatto così">
+        <h2>Perché è fatto così</h2>
+        <div class="tablewrap">
+          <table class="lv">
+            <tr><th>Scelta nel prototipo</th><th>Da dove viene</th></tr>
+            <tr><td>Vibrazione per gli allarmi, suono per la direzione, una parola per l'oggetto</td><td>Con il bastone il carico mentale era 74,7% con l'audio e 3,3% con la vibrazione (6 persone); gli utenti preferiscono audio e vibrazione insieme (19 persone). <a href="https://cvhci.iar.kit.edu/~dkoester/publications/martinezICCHP2014tlx.pdf" target="_blank" rel="noopener">Martinez</a>, <a href="https://arxiv.org/pdf/2504.06379" target="_blank" rel="noopener">Soltani</a></td></tr>
+            <tr><td>Frasi d'azione: "passa a sinistra", "fermati", "in arrivo da destra"</td><td>15 utenti su 16 preferiscono la guida passo-passo alla descrizione dell'ambiente. <a href="https://arxiv.org/pdf/2504.06379" target="_blank" rel="noopener">Soltani</a></td></tr>
+            <tr><td>Avviso "ostacolo in alto"</td><td>13% ha incidenti alla testa ogni mese; 84,5% vuole questo rilevamento. <a href="https://tr.soe.ucsc.edu/research/technical-reports/UCSC-SOE-10-24" target="_blank" rel="noopener">Manduchi</a>, <a href="https://piet.apps01.yorku.ca/wp-content/uploads/2020/08/Shortcomings-of-the-White-Cane.pdf" target="_blank" rel="noopener">Meshram</a></td></tr>
+            <tr><td>Bici, moto e auto in avvicinamento hanno la priorità più alta</td><td>82% si sente insicuro per il comportamento dei ciclisti, 77% per i monopattini. <a href="https://media.rnib.org.uk/documents/In_My_Way_-_Navigating_pedestrian_journeys_with_sight_loss_2025_PDF.pdf" target="_blank" rel="noopener">RNIB 2025</a></td></tr>
+            <tr><td>Un solo oggetto parla alla volta, silenzio quando la via è libera, niente ripetizioni</td><td>La vibrazione continua di WeWALK è tra le critiche degli utenti; il sovraccarico è il rischio principale dell'audio. <a href="https://www.applevis.com/comment/172442" target="_blank" rel="noopener">AppleVis</a></td></tr>
+            <tr><td>"Probabile" per gli oggetti nascosti, "Non vedo bene" quando la visione cala</td><td>Nessuno dei 7 prodotti analizzati comunica la propria incertezza; il brief lo chiede esplicitamente.</td></tr>
+            <tr><td>Nessun filtro di schiarimento al buio; si consiglia la torcia</td><td>Diversi filtri peggiorano il detector sul dataset notturno ExDark. <a href="https://arxiv.org/pdf/2410.18398" target="_blank" rel="noopener">YOLA</a></td></tr>
+            <tr><td>Regolazioni di voce, prudenza e vibrazione</td><td>Mobilio con segnali personalizzati: −41% di contatti con l'ambiente. <a href="https://www.natureasia.com/en/info/press-releases/detail/9426" target="_blank" rel="noopener">Nature Biomedical Engineering</a></td></tr>
+            <tr><td>"Dove sono?" dice la precisione; niente numero civico se il GPS è impreciso</td><td>In città il GPS sbaglia di 10-40 m trasversalmente alla strada. <a href="https://insidegnss.com/urban-positioning-on-a-smartphone/" target="_blank" rel="noopener">Inside GNSS</a></td></tr>
+            <tr><td>Faro sonoro, che tace quando c'è un pericolo; annunci automatici spenti</td><td>Il faro è la funzione più intuitiva di Soundscape; gli annunci automatici rischiano sovraccarico. <a href="https://blogs.microsoft.com/accessibility/soundscape/" target="_blank" rel="noopener">Microsoft</a></td></tr>
+            <tr><td>Primo avvio: bastone, telefono sul petto, cuffie aperte, privacy</td><td>Rischio di eccesso di fiducia; richiesta di non coprire i suoni della strada; GDPR. Immagini elaborate sul telefono e mai salvate.</td></tr>
+            <tr><td>Interfaccia a quattro pulsanti enormi, giallo su nero, conferma con voce e vibrazione</td><td>Utenti ciechi e ipovedenti (la quota cresce dopo i 65 anni); compatibile con VoiceOver e TalkBack.</td></tr>
+          </table>
+        </div>
+        <p class="note">Gli studi citati hanno campioni piccoli: indicano la direzione, vanno confermati con test su persone cieche reali, non solo bendate.</p>
+      </section>
+
+      <section class="panel" aria-label="Orientamento">
+        <h2>Orientamento</h2>
+        <div class="metrics">
+          <div class="metric"><div class="k">Posizione (precisione)</div><div class="v" id="oPos" style="font-size:15px">–</div></div>
+          <div class="metric"><div class="k">Direzione di marcia</div><div class="v" id="oHead" style="font-size:15px">–</div></div>
+          <div class="metric"><div class="k">Punto segnato</div><div class="v" id="oBeacon" style="font-size:15px">nessuno</div></div>
+          <div class="metric"><div class="k">Fonte</div><div class="v" id="oSrc" style="font-size:15px">–</div></div>
+        </div>
+        <div class="controls">
+          <button class="btn" id="jWhere" type="button">Dove sono?</button>
+          <button class="btn" id="jBeacon" type="button">Segna / faro</button>
+          <button class="btn" id="jClear" type="button">Cancella punto</button>
+          <label class="toggle"><input type="checkbox" id="optSimGps"> Simula percorso</label>
+        </div>
+        <p class="note">Come Soundscape: il faro sonoro suona dalla direzione del punto segnato. I pericoli hanno sempre la precedenza sul faro. Se il GPS è impreciso il sistema lo dice.</p>
+      </section>
+
+      <section class="panel" aria-label="Legenda">
+        <h2>Legenda</h2>
+        <ul class="legend">
+          <li><span class="sw seen"></span> Visto ora: riquadro pieno</li>
+          <li><span class="sw maybe"></span> Probabile: nascosto, posizione predetta, cerchio di incertezza</li>
+          <li><span class="sw lost"></span> Perso: tenuto in memoria per ritrovarlo</li>
+          <li><span class="sw danger"></span> Pericolo critico (livello 1)</li>
+        </ul>
+        <div class="tablewrap" style="margin-top:10px">
+          <table class="lv">
+            <tr><th>Livello</th><th>Quando</th><th>Feedback</th></tr>
+            <tr><td>1 Critico</td><td>Collisione entro 2,5 s, o ostacolo vicino nel percorso</td><td>Vibrazione forte + suono rapido + "Stop"</td></tr>
+            <tr><td>2 Attenzione</td><td>Nel percorso entro circa 4 m</td><td>Vibrazione + suono + nome</td></tr>
+            <tr><td>3 Contesto</td><td>Fuori percorso o in allontanamento</td><td>Silenzio</td></tr>
+            <tr><td>4 Informazione</td><td>Panchine, sedie, vasi lontani</td><td>Solo con "Cosa c'è?"</td></tr>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel" aria-label="Registro messaggi">
+        <h2>Cosa ha detto all'utente</h2>
+        <ol class="log" id="log"></ol>
+      </section>
+    </div>
+  </div>
+</div>
+
+<video id="vid" playsinline muted loop hidden></video>
+<div class="sr" id="srAssert" aria-live="assertive"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
+<script>
+(() => {
+'use strict';
+// ------------------------------------------------------------------ constants
+const NAMES = { person:'persona', bicycle:'bici', car:'auto', motorcycle:'moto', bus:'autobus', truck:'camion', dog:'cane', cat:'gatto',
+  chair:'sedia', bench:'panchina', 'potted plant':'vaso', 'fire hydrant':'idrante', 'stop sign':'cartello', 'traffic light':'semaforo',
+  'parking meter':'parchimetro', suitcase:'valigia', backpack:'zaino', umbrella:'ombrello', skateboard:'skateboard', 'dining table':'tavolo',
+  couch:'divano', bed:'letto', toilet:'water', tv:'televisore', refrigerator:'frigorifero', bottle:'bottiglia', cup:'tazza', handbag:'borsa' };
+const H_REAL = { person:1.7, bicycle:1.1, motorcycle:1.2, car:1.5, bus:3.0, truck:3.0, dog:0.6, cat:0.3, chair:0.9, bench:0.85,
+  'potted plant':0.8, 'fire hydrant':0.7, 'stop sign':2.2, 'traffic light':3.0, 'parking meter':1.3, suitcase:0.65, 'dining table':0.75,
+  couch:0.85, bed:0.6, refrigerator:1.8, tv:0.6, bottle:0.25, cup:0.1, backpack:0.5, handbag:0.3, umbrella:1.0, skateboard:0.15, toilet:0.8 };
+const MOVING = new Set(['bicycle','motorcycle','car','bus','truck']);
+const LIVING = new Set(['person','dog','cat']);
+const INFO = new Set(['bench','chair','potted plant','dining table','couch','bed','tv','bottle','cup','refrigerator','toilet']);
+const F_NORM = 0.5 / Math.tan((60 * Math.PI / 180) / 2); // vertical FOV ~60 degrees
+const COAST = c => MOVING.has(c) ? 1.2 : LIVING.has(c) ? 2.2 : 3.0;
+const REID_WINDOW = 3.5;
+
+// ------------------------------------------------------------------ state
+const S = {
+  source: 'sim', running: false, guiding: false, model: null, modelLoading: false,
+  tracks: [], lost: [], nextId: 1,
+  health: { level: 'good', luma: 0.5, lap: 1, sat: 0 }, healthSpoken: 'good', healthSpokenAt: 0,
+  dark: false, cover: false, beat: true,
+  fpsT: [], inferMs: 0, pipeMs: 0,
+  recov: 0, losses: 0, recovTimes: [], gtMap: new Map(), switches: 0,
+  top: null, topLevel: 0, spoken: new Map(), lastBeat: 0, lastSayAt: 0,
+  simT0: performance.now(), detBusy: false, lastDetT: 0,
+};
+const $ = id => document.getElementById(id);
+const APP_VERSION = '0.3.0';
+const IS_APP = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true || /github\.io$/.test(location.hostname);
+const P = { rate: 1, prud: 1, vib: true };
+try { Object.assign(P, JSON.parse(localStorage.getItem('ecoFidatoPrefs') || '{}')); } catch (e) {}
+const savePrefs = () => { try { localStorage.setItem('ecoFidatoPrefs', JSON.stringify(P)); } catch (e) {} };
+const view = $('view'), vctx = view.getContext('2d');
+const scene = document.createElement('canvas'); scene.width = 640; scene.height = 480; const sctx = scene.getContext('2d');
+const probe = document.createElement('canvas'); probe.width = 80; probe.height = 60; const pctx = probe.getContext('2d', { willReadFrequently: true });
+const vid = $('vid');
+const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+// ------------------------------------------------------------------ helpers
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const iou = (a, b) => {
+  const x1 = Math.max(a.x, b.x), y1 = Math.max(a.y, b.y), x2 = Math.min(a.x + a.w, b.x + b.w), y2 = Math.min(a.y + a.h, b.y + b.h);
+  const inter = Math.max(0, x2 - x1) * Math.max(0, y2 - y1);
+  const u = a.w * a.h + b.w * b.h - inter; return u > 0 ? inter / u : 0;
+};
+const dirWord = cx => cx < 0.38 ? 'a sinistra' : cx > 0.62 ? 'a destra' : 'davanti';
+const nameOf = c => NAMES[c] || 'oggetto';
+const distOf = (c, h) => (H_REAL[c] || 1.0) * F_NORM / Math.max(h, 0.01);
+const fmtM = d => d < 10 ? d.toFixed(1).replace('.', ',') + ' m' : Math.round(d) + ' m';
+
+// ------------------------------------------------------------------ tracker (alpha-beta filter + two-pass association + re-acquire)
+function predictTrack(t, dt) {
+  const damp = t.state === 'seen' ? 1 : 0.985;
+  t.vx *= damp; t.vy *= damp; t.vh *= damp;
+  t.cx += t.vx * dt; t.cy += t.vy * dt; t.h = clamp(t.h + t.vh * dt, 0.01, 1.5); t.w = t.h * t.ar;
+}
+function boxOf(t) { return { x: t.cx - t.w / 2, y: t.cy - t.h / 2, w: t.w, h: t.h }; }
+function newTrack(d, now) {
+  return { id: S.nextId++, cls: d.cls, cx: d.x + d.w / 2, cy: d.y + d.h / 2, w: d.w, h: d.h, ar: d.w / Math.max(d.h, 1e-3),
+    vx: 0, vy: 0, vh: 0, hits: 1, born: now, lastSeen: now, state: 'tentative', score: d.score, trust: d.score, occludedAt: 0, gt: d.gt };
+}
+function updateTrack(t, d, now) {
+  const dt = Math.max(1e-3, (now - t.lastUpd) / 1000 || 0.05);
+  const zx = d.x + d.w / 2, zy = d.y + d.h / 2;
+  const a = 0.55, b = 0.25;
+  const rx = zx - t.cx, ry = zy - t.cy, rh = d.h - t.h;
+  if (t.state === 'maybe') { // re-acquired after a gap: snap to the measurement, keep the predicted velocity
+    t.cx = zx; t.cy = zy; t.h = d.h;
+  } else {
+    t.cx += a * rx; t.cy += a * ry; t.h += a * rh;
+    t.vx += (b / dt) * rx; t.vy += (b / dt) * ry; t.vh += (b / dt) * rh;
+  }
+  t.vx = clamp(t.vx, -1.5, 1.5); t.vy = clamp(t.vy, -1.5, 1.5); t.vh = clamp(t.vh, -1.5, 1.5);
+  t.ar = 0.8 * t.ar + 0.2 * (d.w / Math.max(d.h, 1e-3)); t.w = t.h * t.ar;
+  t.score = 0.6 * t.score + 0.4 * d.score;
+  if (t.state === 'maybe') {
+    const occ = (now - t.occludedAt) / 1000;
+    if (occ > 0.5) { S.recov++; S.recovTimes.push(occ); logMsg(`Ritrovata ID ${t.id} (${nameOf(t.cls)}) dopo ${occ.toFixed(1)} s nascosta`, 0); }
+  }
+  t.hits++; t.lastSeen = now; t.state = t.hits >= 2 ? 'seen' : 'tentative';
+  if (d.gt != null) {
+    const prev = S.gtMap.get(d.gt); if (prev != null && prev !== t.id) S.switches++; S.gtMap.set(d.gt, t.id);
+  }
+}
+function associate(dets, now) {
+  const dtPred = S.lastAssoc ? (now - S.lastAssoc) / 1000 : 0; S.lastAssoc = now;
+  for (const t of S.tracks) { predictTrack(t, dtPred); }
+  const hi = dets.filter(d => d.score >= 0.5), lo = dets.filter(d => d.score < 0.5);
+  const used = new Set(), matched = new Set();
+  const pass = (pool, minIou, allowGate) => {
+    const pairs = [];
+    for (const t of S.tracks) { if (matched.has(t)) continue;
+      for (const d of pool) { if (used.has(d) || d.cls !== t.cls) continue;
+        const o = iou(boxOf(t), d);
+        let s = o;
+        if (o < minIou && allowGate && t.state === 'maybe') {
+          const dist = Math.hypot(d.x + d.w / 2 - t.cx, d.y + d.h / 2 - t.cy);
+          if (dist < sigmaOf(t, now) + 0.06) s = minIou + 0.01 * (1 - dist);
+        }
+        if (s >= minIou) pairs.push([s, t, d]);
+      } }
+    pairs.sort((p, q) => q[0] - p[0]);
+    for (const [, t, d] of pairs) { if (matched.has(t) || used.has(d)) continue; matched.add(t); used.add(d); t.lastUpd = t.lastUpd || now; updateTrack(t, d, now); t.lastUpd = now; }
+  };
+  pass(hi, 0.25, true);
+  pass(lo, 0.2, true); // second pass: low-confidence (partly hidden) boxes, ByteTrack-style
+  // unmatched tracks -> probable / lost
+  for (const t of S.tracks) {
+    if (matched.has(t)) continue;
+    if (t.state === 'seen') { t.state = 'maybe'; t.occludedAt = now; const b = boxOf(t); t.edge = b.x < 0.03 || b.x + b.w > 0.97 || b.y + b.h > 0.97 || b.y < 0.02; }
+    else if (t.state === 'tentative' && now - t.born > 600) t.state = 'dead';
+  }
+  // re-acquire lost tracks from fresh high-confidence detections
+  for (const d of hi) { if (used.has(d)) continue;
+    let best = null, bd = 1e9;
+    for (const L of S.lost) { if (L.cls !== d.cls) continue;
+      const age = (now - L.lostAt) / 1000; const gate = 0.12 + 0.18 * age;
+      const dist = Math.hypot(d.x + d.w / 2 - L.cx, d.y + d.h / 2 - L.cy);
+      if (dist < gate && dist < bd) { bd = dist; best = L; } }
+    if (best) { S.lost.splice(S.lost.indexOf(best), 1); if (!best.noCount) S.losses--; best.state = 'maybe'; best.hits = 2; best.lastUpd = now; best.vx = best.vy = best.vh = 0; S.tracks.push(best); updateTrack(best, d, now); used.add(d); }
+  }
+  for (const d of hi) { if (used.has(d)) continue; const t = newTrack(d, now); t.lastUpd = now; S.tracks.push(t); }
+}
+function ageTracks(now) {
+  const healthCoast = S.health.level === 'good' ? 1 : 0.6;
+  for (const t of S.tracks) {
+    if (t.state === 'maybe') {
+      const age = (now - t.occludedAt) / 1000;
+      if (age > COAST(t.cls) * healthCoast) { t.state = 'lost'; t.lostAt = now; S.lost.push(t); if (!t.edge) S.losses++; else t.noCount = true; if (S.top && S.top.id === t.id) cueLost(); }
+    }
+    // trust: calibrated score when seen, exponential decay while hidden
+    let base = clamp(t.score * 1.1, 0, 1);
+    if (S.health.level === 'low') base *= 0.7; if (S.health.level === 'bad') base *= 0.35;
+    t.trust = t.state === 'maybe' ? base * Math.exp(-((now - t.occludedAt) / 1000) / 0.9) : base;
+    t.dist = distOf(t.cls, t.h);
+    t.ttc = t.vh > 0.004 ? t.h / t.vh : Infinity;
+  }
+  for (const t of S.tracks) if (t.state === 'maybe' && (t.cx - t.w / 2 > 1 || t.cx + t.w / 2 < 0 || t.cy - t.h / 2 > 1)) t.state = 'dead'; // left the field of view
+  S.tracks = S.tracks.filter(t => t.state !== 'lost' && t.state !== 'dead');
+  S.lost = S.lost.filter(L => (now - L.lostAt) / 1000 < REID_WINDOW);
+}
+function sigmaOf(t, now) {
+  if (t.state !== 'maybe') return 0.015;
+  const age = (now - t.occludedAt) / 1000; const sp = Math.hypot(t.vx, t.vy);
+  return 0.02 + 0.12 * age * (1 + 4 * sp);
+}
+
+// ------------------------------------------------------------------ risk & levels
+function assess(t, now) {
+  const inPath = t.cx > 0.3 && t.cx < 0.7;
+  const high = (t.cy + t.h / 2) < 0.45 && !LIVING.has(t.cls) && !MOVING.has(t.cls);
+  const prud = (S.health.level === 'good' ? 1 : 1.3) * P.prud;
+  const d = t.dist, ttc = t.ttc;
+  const approaching = t.vh > 0.02 && t.hits > 4;
+  let lvl = 3;
+  if (INFO.has(t.cls)) lvl = 4;
+  if (inPath && d < 4 * prud) lvl = 2;
+  if ((MOVING.has(t.cls) || LIVING.has(t.cls)) && approaching && d < 7 * prud && Math.abs(t.cx - 0.5) < 0.32) lvl = Math.min(lvl, 2);
+  if ((approaching && ttc < 2.5 * prud && d < 5 * prud && Math.abs(t.cx - 0.5) < 0.22) || (inPath && d < 1.3 * prud) || (high && d < 1.6 * prud)) lvl = 1;
+  if (!inPath && !approaching && lvl === 2) lvl = 3;
+  // hysteresis: keep a level a bit longer once reached
+  if (t.lvl && t.lvl < lvl && now - (t.lvlAt || 0) < 700) lvl = t.lvl;
+  if (t.lvl !== lvl) { t.lvl = lvl; t.lvlAt = now; }
+  t.high = high; t.inPath = inPath; t.approaching = approaching;
+  const w = MOVING.has(t.cls) ? 3 : LIVING.has(t.cls) ? 2 : INFO.has(t.cls) ? 0.6 : 1.5;
+  const kPath = inPath ? 1 : 0.45, kHigh = high ? 1.6 : 1;
+  const invT = isFinite(ttc) ? 1 / Math.max(ttc, 0.3) : 1 / Math.max(d, 0.5) * 0.6;
+  const unc = lvl <= 2 ? (1 + 0.6 * (1 - t.trust)) : 1; // uncertainty raises caution
+  t.risk = w * invT * kPath * kHigh * unc * (t.state === 'tentative' ? 0.3 : 1);
+  return lvl;
+}
+
+// ------------------------------------------------------------------ feedback: vibration + sound + one word
+let AC = null, master = null;
+function audioInit() {
+  if (AC) return; try { AC = new (window.AudioContext || window.webkitAudioContext)(); master = AC.createGain(); master.gain.value = 0.9; master.connect(AC.destination); } catch (e) { AC = null; }
+}
+function beep({ freq = 660, dur = 0.07, pan = 0, muffled = false, gain = 0.35, type = 'triangle' } = {}) {
+  if (!AC) return; const t0 = AC.currentTime;
+  const o = AC.createOscillator(), g = AC.createGain(); o.type = type; o.frequency.value = freq;
+  let node = o; if (muffled) { const f = AC.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 520; o.connect(f); node = f; gain *= 0.7; }
+  let out = g; if (AC.createStereoPanner) { const p = AC.createStereoPanner(); p.pan.value = clamp(pan, -1, 1); g.connect(p); out = p; }
+  node.connect(g); out.connect(master);
+  g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(gain, t0 + 0.008); g.gain.exponentialRampToValueAtTime(0.0008, t0 + dur);
+  o.start(t0); o.stop(t0 + dur + 0.02);
+}
+function vibrate(p) { try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) {} }
+const VIB_OK = (() => { try { return typeof navigator.vibrate === 'function'; } catch (e) { return false; } })();
+let itVoice = null;
+function pickVoice() { try { const vs = speechSynthesis.getVoices(); itVoice = vs.find(v => /^it/i.test(v.lang)) || null; } catch (e) {} }
+try { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; } catch (e) {}
+function say(text, urgent = false) {
+  S.lastSayAt = performance.now();
+  logMsg(text, urgent ? 1 : 2);
+  $('saying').textContent = text; if (S.guiding || S.speakAnyway) $('uStatus').textContent = text;
+  if (urgent) $('srAssert').textContent = text;
+  if (!S.guiding && !S.speakAnyway) return;
+  try {
+    if (urgent) speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text); u.lang = 'it-IT'; if (itVoice) u.voice = itVoice; u.rate = (urgent ? 1.15 : 1.0) * P.rate;
+    speechSynthesis.speak(u);
+  } catch (e) {}
+}
+function cueLost() { if (!S.guiding) return; beep({ freq: 520, dur: 0.09, gain: 0.25 }); setTimeout(() => beep({ freq: 390, dur: 0.12, gain: 0.25 }), 110); }
+
+let nextBeepAt = 0;
+function feedback(now) {
+  // choose the single most dangerous object
+  let top = null, lvl = 9;
+  for (const t of S.tracks) { if (t.state === 'tentative' || (t.state === 'maybe' && t.edge)) continue; const l = t.curLvl;
+    if (l > 2) continue; if (l < lvl || (l === lvl && t.risk > (top ? top.risk : -1))) { top = t; lvl = l; } }
+  // probable objects only speak if trust still meaningful, unless critical
+  if (top && top.state === 'maybe' && lvl === 2 && top.trust < 0.15) { top = null; lvl = 9; }
+  const flash = $('flash'); flash.className = top ? (lvl === 1 ? 'l1' : 'l2') : '';
+  $('uCard').className = 'card' + (top ? ' l' + lvl : '');
+  $('saying').className = 'saying' + (top ? ' l' + lvl : '');
+  if (!top) {
+    if (S.top) { S.top = null; S.topLevel = 0; if (performance.now() - S.lastSayAt > 400) setQuiet(); }
+    if (S.guiding && S.beat && now - S.lastBeat > 10000) { S.lastBeat = now; if (P.vib) vibrate(25); else beep({ freq: 300, dur: 0.04, gain: 0.08, type: 'sine' }); }
+    return;
+  }
+  const changed = !S.top || S.top.id !== top.id || lvl < S.topLevel || (S.top.state !== top.state && top.state === 'maybe' && lvl === 1);
+  S.top = top; S.topLevel = lvl;
+  const maybe = top.state === 'maybe';
+  const phrase = alertPhrase(top, lvl);
+  const cur = phrase + ' · ' + fmtM(top.dist);
+  if (now - S.lastSayAt > 300) $('saying').textContent = cur;
+  if (changed) {
+    const key = top.id + ':' + lvl + ':' + (maybe ? 'm' : 's');
+    if (!S.spoken.has(key) || now - S.spoken.get(key) > 6000) {
+      S.spoken.set(key, now);
+      say(phrase, lvl === 1);
+    }
+    if (lvl === 1 && P.vib) vibrate([220, 70, 220, 70, 220]);
+  }
+  // rhythm: faster when closer (parking-sensor style)
+  if (S.guiding && now >= nextBeepAt) {
+    const d = top.dist; const period = lvl === 1 ? 140 : clamp(170 + d * 170, 220, 1000);
+    nextBeepAt = now + period;
+    const freq = MOVING.has(top.cls) ? 900 : LIVING.has(top.cls) ? 700 : 480;
+    beep({ freq, pan: (top.cx - 0.5) * 1.8, muffled: maybe, gain: lvl === 1 ? 0.45 : 0.3, type: maybe ? 'sine' : 'triangle' });
+    if (lvl === 2 && P.vib) vibrate(maybe ? 25 : 55);
+  }
+}
+// action-oriented wording (users prefer what to do over scene description)
+function freeSide(top) {
+  let left = 0, right = 0;
+  for (const t of S.tracks) { if (t === top || t.state === 'tentative' || t.dist > 4) continue;
+    if (t.cx < 0.35) left++; else if (t.cx > 0.65) right++; }
+  if (left && right) return null;
+  if (!left && !right) return top.cx >= 0.5 ? 'sinistra' : 'destra';
+  return left ? 'destra' : 'sinistra';
+}
+function alertPhrase(t, lvl) {
+  const maybe = t.state === 'maybe'; const pre = (lvl === 1 ? 'Stop! ' : '') + (maybe ? 'Probabile ' : '');
+  const cap = w => maybe || lvl === 1 ? w : w.charAt(0).toUpperCase() + w.slice(1);
+  if ((MOVING.has(t.cls) || LIVING.has(t.cls)) && t.approaching) {
+    const from = t.cx < 0.38 ? 'da sinistra' : t.cx > 0.62 ? 'da destra' : 'di fronte';
+    return pre + cap(nameOf(t.cls)) + ' in arrivo ' + from;
+  }
+  const what = t.high ? 'ostacolo in alto' : nameOf(t.cls);
+  let txt = pre + cap(what) + ' ' + dirWord(t.cx);
+  if (t.inPath) { const side = freeSide(t); txt += side ? ', passa a ' + side : ', fermati'; }
+  return txt;
+}
+function setQuiet() { $('saying').textContent = 'In silenzio: nessun pericolo.'; if (S.guiding) $('uStatus').textContent = 'Guida attiva. Nessun pericolo.'; }
+
+function describeScene() {
+  const now = performance.now();
+  const items = S.tracks.filter(t => t.state === 'seen' || t.state === 'maybe').sort((a, b) => a.dist - b.dist).slice(0, 5);
+  let txt;
+  if (S.health.level === 'bad') txt = 'Non vedo bene. ';
+  else txt = '';
+  if (!items.length) txt += 'Non vedo oggetti.';
+  else txt += items.map(t => (t.state === 'maybe' ? 'probabile ' : '') + nameOf(t.cls) + ' ' + dirWord(t.cx) + ', ' + fmtM(t.dist).replace(' m', ' metri')).join('; ') + '.';
+  S.speakAnyway = true; say(txt, false); S.speakAnyway = false;
+  vibrate(20);
+}
+
+// ------------------------------------------------------------------ image health (light, blur, covered)
+function checkHealth(src, now) {
+  try {
+    pctx.drawImage(src, 0, 0, 80, 60);
+    const px = pctx.getImageData(0, 0, 80, 60).data; const L = new Float32Array(4800);
+    let sum = 0, sat = 0;
+    for (let i = 0, j = 0; i < px.length; i += 4, j++) { const y = (0.299 * px[i] + 0.587 * px[i + 1] + 0.114 * px[i + 2]) / 255; L[j] = y; sum += y; if (y > 0.97) sat++; }
+    const mean = sum / 4800; let lap = 0, n = 0;
+    for (let y = 1; y < 59; y++) for (let x = 1; x < 79; x++) { const k = y * 80 + x; const v = 4 * L[k] - L[k - 1] - L[k + 1] - L[k - 80] - L[k + 80]; lap += v * v; n++; }
+    lap = lap / n * 1000;
+    S.health.luma = mean; S.health.lap = lap; S.health.sat = sat / 4800;
+  } catch (e) { /* tainted canvas: keep previous */ }
+  const h = S.health; const fps = currentFps();
+  let lvl = 'good';
+  if (h.luma < 0.16 || h.sat > 0.4 || (fps > 0 && fps < 4)) lvl = 'low';
+  if (h.luma < 0.06 || h.lap < 0.05) lvl = 'bad';
+  h.level = lvl;
+  const pill = $('health');
+  pill.textContent = lvl === 'good' ? 'Buona' : lvl === 'low' ? 'Ridotta' : 'Non vedo bene';
+  pill.className = 'pill ' + (lvl === 'good' ? 'good' : lvl === 'low' ? 'mid' : 'bad');
+  $('uHealth').className = 'chip ' + (lvl === 'good' ? '' : lvl === 'low' ? 'mid' : 'bad'); $('uHealthT').textContent = lvl === 'good' ? 'Vista buona' : lvl === 'low' ? 'Vista ridotta' : 'Non vedo bene';
+  if (lvl !== S.healthSpoken && now - S.healthSpokenAt > 2500) {
+    S.healthSpokenAt = now; const was = S.healthSpoken; S.healthSpoken = lvl;
+    if (lvl === 'bad') { say('Non vedo bene. Usa il bastone.', true); vibrate([90, 60, 90, 60, 90, 60, 90]); }
+    else if (lvl === 'low') say('Luce scarsa. Affidabilità ridotta. Se puoi, accendi la torcia del telefono.', false);
+    else if (was !== 'good') say('Vedo di nuovo bene.', false);
+  } else if (lvl === 'bad' && now - S.healthSpokenAt > 15000) { S.healthSpokenAt = now; say('Non vedo ancora bene.', false); }
+}
+
+// ------------------------------------------------------------------ simulated scene (ground truth + detector noise)
+const OCC = { x: 0.40, y: 0.14, w: 0.20, h: 0.66 };
+function simObjects(t) {
+  const T = t % 16, cyc = Math.floor(t / 16) * 10; const objs = [];
+  // pedestrian crossing behind the kiosk
+  if (T < 10.5) { const p = T / 10.5; const h = 0.40, w = 0.13; const cx = -0.05 + 1.1 * p; objs.push({ gt: cyc + 1, cls: 'person', x: cx - w / 2, y: 0.80 - h, w, h, behind: true }); }
+  // bicycle approaching in front, slightly right of centre
+  if (T > 8 && T < 13.6) { const p = (T - 8) / 5.6; const e = p * p; const h = 0.08 + 0.52 * e, w = h * 1.45; const cx = 0.66 - 0.08 * e; const bottom = 0.52 + 0.46 * e; objs.push({ gt: cyc + 2, cls: 'bicycle', x: cx - w / 2, y: bottom - h, w, h, behind: false }); }
+  objs.push({ gt: 3, cls: 'potted plant', x: 0.84, y: 0.62, w: 0.09, h: 0.17, behind: false });
+  objs.push({ gt: 4, cls: 'bench', x: 0.02, y: 0.62, w: 0.24, h: 0.14, behind: false });
+  return objs;
+}
+function overlapFrac(b, o) {
+  const x1 = Math.max(b.x, o.x), y1 = Math.max(b.y, o.y), x2 = Math.min(b.x + b.w, o.x + o.w), y2 = Math.min(b.y + b.h, o.y + o.h);
+  return Math.max(0, x2 - x1) * Math.max(0, y2 - y1) / (b.w * b.h);
+}
+let rngS = 7; const rnd = () => { rngS = (rngS * 16807) % 2147483647; return rngS / 2147483647; };
+function simDetect(objs) {
+  const dets = [];
+  for (const o of objs) {
+    let vis = 1; if (o.behind) vis = 1 - overlapFrac(o, OCC);
+    if (vis < 0.45) continue;
+    let score = 0.72 + 0.18 * rnd() - (vis < 0.8 ? 0.32 : 0);
+    if (S.dark) score -= 0.28;
+    if (S.cover) continue;
+    if (rnd() < (S.dark ? 0.38 : 0.03)) continue;
+    if (score < 0.25) continue;
+    let { x, y, w, h } = o;
+    if (o.behind && vis < 0.8) { // truncated visible part
+      if (x + w / 2 < 0.5) w = Math.max(0.01, OCC.x - x); else { const nx = OCC.x + OCC.w; w = Math.max(0.01, x + w - nx); x = nx; }
+    }
+    const j = S.dark ? 0.018 : 0.006;
+    dets.push({ cls: o.cls, score, x: x + (rnd() - 0.5) * j, y: y + (rnd() - 0.5) * j, w: w * (1 + (rnd() - 0.5) * j * 2), h: h * (1 + (rnd() - 0.5) * j * 2), gt: o.gt });
+  }
+  return dets;
+}
+function drawSim(objs) {
+  const W = 640, H = 480, c = sctx;
+  c.fillStyle = '#9fb7c9'; c.fillRect(0, 0, W, H * 0.45);
+  c.fillStyle = '#c9c4b8'; c.fillRect(0, H * 0.45, W, H * 0.55);
+  c.fillStyle = '#b3ad9f'; c.beginPath(); c.moveTo(W * 0.42, H * 0.45); c.lineTo(W * 0.58, H * 0.45); c.lineTo(W * 0.95, H); c.lineTo(W * 0.05, H); c.closePath(); c.fill();
+  c.fillStyle = '#7d8a96'; c.fillRect(0, H * 0.18, W * 0.3, H * 0.27); c.fillRect(W * 0.7, H * 0.12, W * 0.3, H * 0.33);
+  const draw = o => {
+    const x = o.x * W, y = o.y * H, w = o.w * W, h = o.h * H;
+    if (o.cls === 'person') { c.fillStyle = '#2d3a6b'; c.fillRect(x + w * 0.22, y + h * 0.2, w * 0.56, h * 0.48); c.fillStyle = '#1e2433'; c.fillRect(x + w * 0.25, y + h * 0.66, w * 0.2, h * 0.34); c.fillRect(x + w * 0.55, y + h * 0.66, w * 0.2, h * 0.34); c.fillStyle = '#d9a07b'; c.beginPath(); c.arc(x + w / 2, y + h * 0.1, h * 0.09, 0, 7); c.fill(); }
+    else if (o.cls === 'bicycle') { c.strokeStyle = '#1b1b1b'; c.lineWidth = Math.max(2, w * 0.05); const r = h * 0.28; c.beginPath(); c.arc(x + r, y + h - r, r, 0, 7); c.stroke(); c.beginPath(); c.arc(x + w - r, y + h - r, r, 0, 7); c.stroke(); c.strokeStyle = '#b3261e'; c.beginPath(); c.moveTo(x + r, y + h - r); c.lineTo(x + w * 0.45, y + h * 0.35); c.lineTo(x + w - r, y + h - r); c.moveTo(x + w * 0.45, y + h * 0.35); c.lineTo(x + w * 0.7, y + h * 0.3); c.stroke(); c.fillStyle = '#3a3a3a'; c.fillRect(x + w * 0.35, y, w * 0.25, h * 0.32); c.fillStyle = '#d9a07b'; c.beginPath(); c.arc(x + w * 0.48, y + h * 0.02, h * 0.07, 0, 7); c.fill(); }
+    else if (o.cls === 'potted plant') { c.fillStyle = '#8a5a3c'; c.fillRect(x + w * 0.2, y + h * 0.55, w * 0.6, h * 0.45); c.fillStyle = '#3f7a3a'; c.beginPath(); c.arc(x + w / 2, y + h * 0.35, w * 0.45, 0, 7); c.fill(); }
+    else if (o.cls === 'bench') { c.fillStyle = '#6b4a2b'; c.fillRect(x, y + h * 0.35, w, h * 0.2); c.fillRect(x, y, w, h * 0.18); c.fillStyle = '#333'; c.fillRect(x + w * 0.08, y + h * 0.55, w * 0.06, h * 0.45); c.fillRect(x + w * 0.86, y + h * 0.55, w * 0.06, h * 0.45); }
+  };
+  objs.filter(o => o.behind).forEach(draw);
+  c.fillStyle = '#2f6b4f'; c.fillRect(OCC.x * W, OCC.y * H, OCC.w * W, OCC.h * H);
+  c.fillStyle = '#e8e2c8'; c.fillRect(OCC.x * W + 10, OCC.y * H + 14, OCC.w * W - 20, 36);
+  c.fillStyle = '#2f6b4f'; c.font = '700 20px sans-serif'; c.textAlign = 'center'; c.fillText('EDICOLA', (OCC.x + OCC.w / 2) * W, OCC.y * H + 39);
+  objs.filter(o => !o.behind).forEach(draw);
+  if (S.dark) { c.fillStyle = 'rgba(0,0,0,0.9)'; c.fillRect(0, 0, W, H); for (let i = 0; i < 900; i++) { c.fillStyle = `rgba(255,255,255,${rnd() * 0.12})`; c.fillRect(rnd() * W, rnd() * H, 2, 2); } }
+  if (S.cover) { c.fillStyle = '#050505'; c.fillRect(0, 0, W, H); }
+}
+
+// ------------------------------------------------------------------ real detector (COCO-SSD, weights shipped with the page)
+async function ensureModel() {
+  if (S.model || S.modelLoading) return; S.modelLoading = true;
+  note('Carico il modello di riconoscimento (circa 18 MB)…');
+  try {
+    if (!window.cocoSsd) throw new Error('libreria non caricata');
+    try { S.model = await cocoSsd.load({ base: 'lite_mobilenet_v2', modelUrl: 'model/model.json' }); }
+    catch (e) { S.model = await cocoSsd.load({ base: 'lite_mobilenet_v2' }); }
+    note(S.source === 'video' ? 'Modello pronto. Il video gira in loop.' : 'Modello pronto.');
+  } catch (e) { note('Non riesco a caricare il modello: ' + e.message + '. Usa la simulazione.', true); }
+  S.modelLoading = false;
+}
+async function detectFrame(now) {
+  if (!S.model || S.detBusy || vid.readyState < 2) return;
+  S.detBusy = true; const t0 = performance.now();
+  try {
+    const W = vid.videoWidth, H = vid.videoHeight;
+    let preds = [];
+    if (!S.cover) preds = await S.model.detect(vid, 20, 0.25);
+    S.inferMs = performance.now() - t0;
+    const dets = preds.map(p => ({ cls: p.class, score: p.score, x: p.bbox[0] / W, y: p.bbox[1] / H, w: p.bbox[2] / W, h: p.bbox[3] / H }));
+    pipeline(dets, t0);
+  } catch (e) {}
+  S.detBusy = false;
+}
+
+// ------------------------------------------------------------------ pipeline + render
+function pipeline(dets, tCapture) {
+  const now = performance.now();
+  associate(dets, now); ageTracks(now);
+  for (const t of S.tracks) t.curLvl = assess(t, now);
+  feedback(now);
+  S.pipeMs = performance.now() - tCapture;
+  S.fpsT.push(now); while (S.fpsT.length && now - S.fpsT[0] > 2000) S.fpsT.shift();
+}
+function currentFps() { const n = S.fpsT.length; return n > 1 ? (n - 1) / ((S.fpsT[n - 1] - S.fpsT[0]) / 1000) : 0; }
+
+function render(src) {
+  const W = view.width, H = view.height; vctx.drawImage(src, 0, 0, W, H);
+  const now = performance.now();
+  const seen = cssVar('--seen') || '#0b7a52', maybe = cssVar('--maybe') || '#b26a00', lost = cssVar('--lost') || '#7b7f88', danger = cssVar('--danger') || '#c4161c';
+  vctx.lineWidth = 3; vctx.font = '600 15px "Atkinson Hyperlegible", sans-serif'; vctx.textAlign = 'left';
+  // corridor
+  vctx.strokeStyle = 'rgba(255,255,255,0.35)'; vctx.setLineDash([6, 8]); vctx.lineWidth = 1.5;
+  vctx.beginPath(); vctx.moveTo(W * 0.3, 0); vctx.lineTo(W * 0.3, H); vctx.moveTo(W * 0.7, 0); vctx.lineTo(W * 0.7, H); vctx.stroke();
+  vctx.setLineDash([]); vctx.fillStyle = 'rgba(255,255,255,0.75)'; vctx.fillText('percorso', W * 0.3 + 6, H - 10);
+  for (const L of S.lost) { const b = boxOf(L); vctx.strokeStyle = lost; vctx.setLineDash([2, 6]); vctx.lineWidth = 2; vctx.strokeRect(b.x * W, b.y * H, b.w * W, b.h * H); }
+  for (const t of S.tracks) {
+    if (t.state === 'tentative') continue;
+    const b = boxOf(t); const isTop = S.top && S.top.id === t.id;
+    const col = isTop && t.curLvl === 1 ? danger : t.state === 'maybe' ? maybe : seen;
+    vctx.strokeStyle = col; vctx.lineWidth = isTop ? 5 : 3; vctx.setLineDash(t.state === 'maybe' ? [10, 7] : []);
+    vctx.strokeRect(b.x * W, b.y * H, b.w * W, b.h * H); vctx.setLineDash([]);
+    if (t.state === 'maybe') { const r = sigmaOf(t, now) * W; vctx.strokeStyle = maybe; vctx.globalAlpha = 0.6; vctx.lineWidth = 2; vctx.beginPath(); vctx.ellipse(t.cx * W, t.cy * H, r + b.w * W / 2, r + b.h * H / 2, 0, 0, 7); vctx.stroke(); vctx.globalAlpha = 1; }
+    const label = `ID ${t.id} ${nameOf(t.cls)} · ${fmtM(t.dist)} · ${Math.round(t.trust * 100)}%` + (t.curLvl <= 2 ? ` · L${t.curLvl}` : '');
+    const tw = vctx.measureText(label).width + 10; const ly = Math.max(18, b.y * H - 4);
+    vctx.fillStyle = col; vctx.fillRect(b.x * W - 1, ly - 17, tw, 20); vctx.fillStyle = '#fff'; vctx.fillText(label, b.x * W + 4, ly - 2);
+  }
+}
+function updateMetrics() {
+  $('mFps').textContent = currentFps().toFixed(1);
+  $('mInf').textContent = S.source === 'sim' ? 'simul.' : Math.round(S.inferMs);
+  $('mLat').textContent = Math.round(S.pipeMs);
+  $('mTracks').textContent = S.tracks.filter(t => t.state !== 'tentative').length;
+  const tot = S.recov + S.losses; $('mRec').textContent = tot ? `${S.recov}/${tot} (${Math.round(100 * S.recov / tot)}%)` : '–';
+  $('mRecT').textContent = S.recovTimes.length ? (S.recovTimes.reduce((a, b) => a + b, 0) / S.recovTimes.length).toFixed(1) + ' s' : '–';
+  $('mSw').textContent = S.source === 'sim' ? S.switches : 'n/d';
+  $('mTop').textContent = S.top ? `L${S.topLevel} ${nameOf(S.top.cls)} ${dirWord(S.top.cx)} ${fmtM(S.top.dist)}${S.top.state === 'maybe' ? ' (probabile)' : ''}` : 'nessuno';
+}
+
+// ------------------------------------------------------------------ main loop
+let lastHealth = 0, lastMetrics = 0;
+function loop() {
+  const now = performance.now();
+  if (S.source === 'sim') {
+    const t = (now - S.simT0) / 1000; const objs = simObjects(t); drawSim(objs);
+    const tc = performance.now(); pipeline(simDetect(objs), tc);
+    if (now - lastHealth > 250) { lastHealth = now; checkHealth(scene, now); }
+    if (!$('jury').hidden) render(scene);
+  } else if (vid.readyState >= 2) {
+    detectFrame(now);
+    if (now - lastHealth > 250) { lastHealth = now; if (S.cover) { pctx.fillStyle = '#000'; pctx.fillRect(0, 0, 80, 60); S.health.luma = 0; checkHealth(probe, now); } else checkHealth(vid, now); }
+    if (!$('jury').hidden) { if (view.width !== 640 || Math.abs(view.height - 640 * vid.videoHeight / vid.videoWidth) > 2) { view.width = 640; view.height = Math.round(640 * vid.videoHeight / vid.videoWidth) || 480; }
+      if (S.cover) { vctx.fillStyle = '#000'; vctx.fillRect(0, 0, view.width, view.height); render(probe); } else render(vid); }
+  }
+  if (now - lastMetrics > 300) { lastMetrics = now; updateMetrics(); }
+  requestAnimationFrame(loop);
+}
+
+// ------------------------------------------------------------------ UI wiring
+const logEl = $('log');
+function logMsg(text, kind) {
+  const li = document.createElement('li'); const tm = document.createElement('time');
+  const d = new Date(); tm.textContent = d.toTimeString().slice(0, 8);
+  const sp = document.createElement('span'); sp.textContent = text; if (kind === 1) sp.className = 'l1';
+  li.append(tm, sp); logEl.prepend(li); while (logEl.children.length > 40) logEl.lastChild.remove();
+}
+function note(t, warn) { const n = $('srcNote'); n.textContent = t; n.className = 'note' + (warn ? ' warn' : ''); }
+function resetTracker() { S.tracks = []; S.lost = []; S.top = null; S.spoken.clear(); S.gtMap.clear(); S.recov = 0; S.losses = 0; S.recovTimes = []; S.switches = 0; S.lastAssoc = 0; }
+
+function setGuiding(on) {
+  S.guiding = on; audioInit(); if (AC && AC.state === 'suspended') AC.resume();
+  const pad = $('padGo'); pad.classList.toggle('on', on); pad.setAttribute('aria-pressed', String(on));
+  $('goLabel').textContent = on ? 'Ferma guida' : 'Avvia guida';
+  $('jGo').textContent = on ? 'Ferma guida' : 'Avvia guida';
+  if (on) {
+    if (IS_APP && S.source !== 'camera') $('srcCam').click();
+    vibrate([60, 60, 60]); beep({ freq: 660, dur: 0.08 }); setTimeout(() => beep({ freq: 880, dur: 0.1 }), 110);
+    try { speechSynthesis.cancel(); } catch (e) {}
+    let first = false; try { first = !localStorage.getItem('ecoFidatoIntro'); localStorage.setItem('ecoFidatoIntro', '1'); } catch (e) { first = !S.introDone; } S.introDone = true;
+    const intro = first ? 'Prima volta: usa Eco Fidato insieme al bastone o al cane guida. Tieni il telefono sul petto con la camera in avanti. Usa cuffie aperte o a conduzione ossea, così senti la strada. Le immagini restano sul telefono e non vengono salvate. ' : '';
+    const msg = intro + 'Guida attiva. Ti avviso solo dei pericoli.' + (VIB_OK ? '' : ' Su questo telefono la vibrazione non è disponibile: uso solo suoni.');
+    S.speakAnyway = true; say(msg); S.speakAnyway = false; S.lastBeat = performance.now();
+    try { navigator.wakeLock && navigator.wakeLock.request('screen').catch(() => {}); } catch (e) {}
+  } else {
+    vibrate(120); beep({ freq: 880, dur: 0.08 }); setTimeout(() => beep({ freq: 560, dur: 0.12 }), 110);
+    S.speakAnyway = true; say('Guida in pausa.'); S.speakAnyway = false;
+  }
+}
+$('padGo').addEventListener('click', () => setGuiding(!S.guiding));
+$('jGo').addEventListener('click', () => setGuiding(!S.guiding));
+$('padWhat').addEventListener('click', () => { audioInit(); describeScene(); });
+$('jWhat').addEventListener('click', () => { audioInit(); describeScene(); });
+$('toJury').addEventListener('click', () => { $('user').hidden = true; $('jury').hidden = false; $('toUser').focus(); });
+$('toUser').addEventListener('click', () => { $('jury').hidden = true; $('user').hidden = false; $('toJury').focus(); });
+$('optDark').addEventListener('change', e => { S.dark = e.target.checked; if (S.source !== 'sim') note(S.dark ? 'Il buio simulato vale solo per la scena simulata: con un video, prova a girarlo con poca luce.' : 'Pronto.'); });
+$('optCover').addEventListener('change', e => { S.cover = e.target.checked; });
+$('optBeat').addEventListener('change', e => { S.beat = e.target.checked; });
+
+function setSource(src) {
+  for (const [id, s] of [['srcSim', 'sim'], ['srcVideo', 'video'], ['srcCam', 'camera']]) $(id).setAttribute('aria-pressed', String(s === src));
+  resetTracker();
+  if (src === 'sim') { stopVideo(); S.source = 'sim'; S.simT0 = performance.now(); view.width = 640; view.height = 480; note('Simulazione: un pedone passa dietro un\'edicola, poi una bici arriva verso l\'utente.'); }
+}
+function stopVideo() { try { if (vid.srcObject) { vid.srcObject.getTracks().forEach(t => t.stop()); vid.srcObject = null; } vid.pause(); } catch (e) {} }
+$('srcSim').addEventListener('click', () => setSource('sim'));
+$('srcVideo').addEventListener('click', () => $('fileIn').click());
+$('fileIn').addEventListener('change', async e => {
+  const f = e.target.files && e.target.files[0]; if (!f) return;
+  setSource('video'); stopVideo(); S.source = 'video';
+  for (const [id, s] of [['srcSim', 'sim'], ['srcVideo', 'video'], ['srcCam', 'camera']]) $(id).setAttribute('aria-pressed', String(s === 'video'));
+  vid.src = URL.createObjectURL(f); vid.muted = true;
+  try { await vid.play(); } catch (err) { note('Non riesco a riprodurre questo video. Prova un file MP4.', true); }
+  ensureModel();
+});
+$('srcCam').addEventListener('click', async () => {
+  try {
+    const st = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 640 } }, audio: false });
+    setSource('camera'); stopVideo(); S.source = 'camera'; vid.srcObject = st; await vid.play();
+    for (const [id, s] of [['srcSim', 'sim'], ['srcVideo', 'video'], ['srcCam', 'camera']]) $(id).setAttribute('aria-pressed', String(s === 'camera'));
+    note('Fotocamera attiva.'); ensureModel();
+  } catch (err) {
+    note('La fotocamera dal vivo non è consentita in questa pagina. Registra un video col telefono e caricalo con "Video", oppure apri la versione da installare.', true);
+    if (IS_APP) { S.speakAnyway = true; say('Non posso usare la fotocamera. Controlla il permesso nelle impostazioni del telefono.', true); S.speakAnyway = false; }
+  }
+});
+
+
+// ------------------------------------------------------------------ orientation (Soundscape-style): where am I, heading, audio beacon
+const O = { pos: null, acc: null, head: null, headSrc: '', beacon: null, beaconOn: false, watch: null, sim: false, simPos: null, simHead: 0, lastBeaconBeep: 0, lastAddr: '', lastAddrAt: 0, geoOk: true };
+const R = 6371000, rad = d => d * Math.PI / 180, deg = r => r * 180 / Math.PI;
+function distM(a, b) { const dl = rad(b.lat - a.lat), dn = rad(b.lon - a.lon); const x = Math.sin(dl / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dn / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(x)); }
+function bearing(a, b) { const y = Math.sin(rad(b.lon - a.lon)) * Math.cos(rad(b.lat)); const x = Math.cos(rad(a.lat)) * Math.sin(rad(b.lat)) - Math.sin(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.cos(rad(b.lon - a.lon)); return (deg(Math.atan2(y, x)) + 360) % 360; }
+const CARD = ['nord', 'nord-est', 'est', 'sud-est', 'sud', 'sud-ovest', 'ovest', 'nord-ovest'];
+const cardinal = h => CARD.at(Math.round(h / 45) % 8);
+function relWord(rel) { // rel: -180..180, 0 = ahead
+  const a = Math.abs(rel);
+  if (a < 20) return 'davanti a te'; if (a > 150) return 'alle tue spalle';
+  if (a < 60) return rel > 0 ? 'leggermente a destra' : 'leggermente a sinistra';
+  return rel > 0 ? 'alla tua destra' : 'alla tua sinistra';
+}
+function startGeo() {
+  if (O.watch != null || O.sim) return;
+  try {
+    if (!navigator.geolocation) throw new Error('no geo');
+    O.watch = navigator.geolocation.watchPosition(p => {
+      O.geoOk = true; O.pos = { lat: p.coords.latitude, lon: p.coords.longitude }; O.acc = p.coords.accuracy;
+      if (p.coords.heading != null && !isNaN(p.coords.heading) && (p.coords.speed || 0) > 0.5 && O.headSrc !== 'bussola') { O.head = p.coords.heading; O.headSrc = 'GPS'; }
+      $('oSrc').textContent = 'GPS del telefono';
+    }, () => { O.geoOk = false; O.watch = null; $('oSrc').textContent = 'posizione non consentita qui'; }, { enableHighAccuracy: true, maximumAge: 2000, timeout: 15000 });
+  } catch (e) { O.geoOk = false; }
+  try {
+    const onOri = e => { let h = null; if (e.webkitCompassHeading != null) h = e.webkitCompassHeading; else if (e.absolute && e.alpha != null) h = (360 - e.alpha) % 360; if (h != null) { O.head = h; O.headSrc = 'bussola'; } };
+    if (window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function') {
+      DeviceOrientationEvent.requestPermission().then(r => { if (r === 'granted') addEventListener('deviceorientation', onOri); }).catch(() => {});
+    } else { addEventListener('deviceorientationabsolute', onOri); addEventListener('deviceorientation', onOri); }
+  } catch (e) {}
+}
+function curPos() { return O.sim ? O.simPos : O.pos; }
+function waitPos(ms) { return new Promise(res => { const t0 = performance.now(); const tick = () => { if (curPos() || performance.now() - t0 > ms || (!O.geoOk && !O.sim)) res(curPos()); else setTimeout(tick, 200); }; tick(); }); }
+async function reverseGeocode(p) {
+  if (O.sim) return 'Via simulata, vicino alla fermata del tram';
+  if (performance.now() - O.lastAddrAt < 20000 && O.lastAddr) return O.lastAddr;
+  try {
+    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=18&accept-language=it&lat=${p.lat}&lon=${p.lon}`);
+    const j = await r.json(); const a = j.address || {};
+    const road = a.road || a.pedestrian || a.footway || a.square || ''; const num = a.house_number && (O.acc || 99) <= 20 ? ' ' + a.house_number : ''; const town = a.city || a.town || a.village || '';
+    O.lastAddr = (road ? road + num : (j.name || '')) + (town ? ', ' + town : ''); O.lastAddrAt = performance.now(); return O.lastAddr;
+  } catch (e) { return ''; }
+}
+async function whereAmI() {
+  audioInit(); startGeo(); vibrate(20);
+  S.speakAnyway = true; say('Cerco la posizione…'); S.speakAnyway = false;
+  const p = await waitPos(8000);
+  let txt;
+  if (!p) txt = 'Non riesco a sapere dove sei: la posizione non è disponibile su questa pagina.';
+  else {
+    const addr = await reverseGeocode(p);
+    txt = addr ? 'Sei in ' + addr + '.' : 'Posizione trovata, ma non riesco a leggere l\'indirizzo.';
+    const acc = O.sim ? 5 : O.acc;
+    if (acc > 25) txt += ' Posizione approssimativa, circa ' + Math.round(acc) + ' metri.';
+    const h = O.sim ? O.simHead : O.head;
+    txt += h != null ? ' Stai andando verso ' + cardinal(h) + '.' : ' Non conosco ancora la direzione: cammina qualche passo.';
+    if (O.beacon) { const d = distM(p, O.beacon); const rel = h != null ? ((bearing(p, O.beacon) - h + 540) % 360) - 180 : null; txt += ' Il punto segnato è a ' + (O.acc > d && !O.sim ? 'meno di ' + Math.round(O.acc) : Math.round(d)) + ' metri' + (rel != null ? ', ' + relWord(rel) : '') + '.'; }
+  }
+  S.speakAnyway = true; say(txt); S.speakAnyway = false;
+}
+async function beaconPress() {
+  audioInit(); startGeo();
+  if (!O.beacon) {
+    const p = await waitPos(8000);
+    if (!p) { S.speakAnyway = true; say('Non posso segnare il punto: la posizione non è disponibile su questa pagina.'); S.speakAnyway = false; return; }
+    O.beacon = { ...p }; if (O.sim) { O.simPos = { lat: p.lat + 0.0005, lon: p.lon + 0.0004 }; O.simHead = 200; }
+    vibrate([40, 40, 40]); beep({ freq: 1040, dur: 0.12 });
+    S.speakAnyway = true; say('Punto segnato. Tocca di nuovo per attivare il faro che ti riporta qui.' + (O.acc > 25 && !O.sim ? ' Attenzione: posizione approssimativa.' : '')); S.speakAnyway = false;
+  } else {
+    O.beaconOn = !O.beaconOn; vibrate(O.beaconOn ? [40, 40, 40] : 120);
+    S.speakAnyway = true; say(O.beaconOn ? 'Faro attivo: segui il suono.' : 'Faro spento.'); S.speakAnyway = false;
+  }
+  syncBeaconUi();
+}
+function clearBeacon() { O.beacon = null; O.beaconOn = false; syncBeaconUi(); S.speakAnyway = true; say('Punto cancellato.'); S.speakAnyway = false; }
+function syncBeaconUi() {
+  $('beaconLabel').textContent = !O.beacon ? 'Segna questo punto' : O.beaconOn ? 'Spegni il faro' : 'Accendi il faro';
+  $('beaconDesc').textContent = !O.beacon ? 'Un suono ti riporta qui' : 'Il suono arriva dalla sua direzione';
+  $('padBeacon').classList.toggle('on', O.beaconOn); $('padBeacon').setAttribute('aria-pressed', String(O.beaconOn));
+}
+function beaconTick(now) {
+  if (O.sim && O.simPos && O.beacon) { // simulated walk: step toward the point with some wobble
+    const b = bearing(O.simPos, O.beacon); O.simHead = (O.simHead + ((((b - O.simHead + 540) % 360) - 180) * 0.02) + 360) % 360;
+    const step = 1.4 / 15 / R; O.simPos = { lat: O.simPos.lat + deg(step * Math.cos(rad(O.simHead))), lon: O.simPos.lon + deg(step * Math.sin(rad(O.simHead))) / Math.cos(rad(O.simPos.lat)) };
+  }
+  const p = curPos(), h = O.sim ? O.simHead : O.head;
+  $('oPos').textContent = p ? `${p.lat.toFixed(5)}, ${p.lon.toFixed(5)} (±${Math.round(O.sim ? 5 : O.acc || 0)} m)` : '–';
+  $('oHead').textContent = h != null ? `${Math.round(h)}° ${cardinal(h)}` : '–';
+  if (O.beacon && p) { const d = distM(p, O.beacon); $('oBeacon').textContent = `${Math.round(d)} m${O.beaconOn ? ' · faro attivo' : ''}`; } else $('oBeacon').textContent = O.beacon ? 'segnato' : 'nessuno';
+  if (!O.beaconOn || !O.beacon || !p || !S.guidingOrBeacon()) return;
+  if (S.top && S.topLevel <= 2) return; // hazards first
+  const d = distM(p, O.beacon);
+  if (d < Math.max(8, (O.sim ? 5 : O.acc || 8) * 0.8)) { O.beaconOn = false; O.beacon = null; syncBeaconUi(); vibrate([80, 60, 80, 60, 200]); S.speakAnyway = true; say('Sei arrivato al punto segnato.'); S.speakAnyway = false; return; }
+  if (now - O.lastBeaconBeep < 1400) return; O.lastBeaconBeep = now;
+  if (h == null) { beep({ freq: 1040, dur: 0.1, gain: 0.2, type: 'sine' }); return; }
+  const rel = ((bearing(p, O.beacon) - h + 540) % 360) - 180;
+  const onTarget = Math.abs(rel) < 20;
+  beep({ freq: onTarget ? 1175 : 880, dur: onTarget ? 0.16 : 0.1, gain: 0.22, type: 'sine', pan: clamp(rel / 90, -1, 1) });
+  if (Math.abs(rel) > 150 && now - (O.lastTurnSay || 0) > 8000) { O.lastTurnSay = now; S.speakAnyway = true; say('Il punto è alle tue spalle.'); S.speakAnyway = false; }
+}
+S.guidingOrBeacon = () => true;
+$('padWhere').addEventListener('click', whereAmI);
+$('jWhere').addEventListener('click', whereAmI);
+$('padBeacon').addEventListener('click', beaconPress);
+$('jBeacon').addEventListener('click', beaconPress);
+$('jClear').addEventListener('click', clearBeacon);
+$('optSimGps').addEventListener('change', e => { O.sim = e.target.checked; if (O.sim) { O.simPos = { lat: 45.46420, lon: 9.18990 }; O.simHead = 30; $('oSrc').textContent = 'simulazione'; } else { O.simPos = null; $('oSrc').textContent = O.pos ? 'GPS del telefono' : '–'; } });
+setInterval(() => beaconTick(performance.now()), 1000 / 60 * 4);
+
+
+// ------------------------------------------------------------------ personal settings (personalisation matters: Mobilio)
+const RATES = [[1, 'Voce normale'], [1.35, 'Voce veloce'], [0.8, 'Voce lenta']];
+function syncPrefs() {
+  $('prefRateL').textContent = (RATES.find(r => r[0] === P.rate) || RATES[0])[1];
+  $('prefPrudL').textContent = P.prud > 1 ? 'Avvisi prudenti' : 'Avvisi normali';
+  $('prefVibL').textContent = P.vib ? 'Vibrazione sì' : 'Vibrazione no'; $('prefVib').setAttribute('aria-pressed', String(P.vib));
+}
+function sayPref(t) { audioInit(); S.speakAnyway = true; say(t); S.speakAnyway = false; vibrate(20); }
+$('toPrefs').addEventListener('click', () => { $('mainPads').hidden = true; $('prefs').hidden = false; $('toPrefs').setAttribute('aria-expanded', 'true'); syncPrefs(); $('prefRate').focus(); sayPref('Impostazioni. Velocità voce, prudenza, vibrazione, e il pulsante Fatto.'); });
+$('prefClose').addEventListener('click', () => { $('prefs').hidden = true; $('mainPads').hidden = false; $('toPrefs').setAttribute('aria-expanded', 'false'); $('padWhat').focus(); savePrefs(); sayPref('Regolazioni salvate.'); });
+$('prefRate').addEventListener('click', () => { const i = RATES.findIndex(r => r[0] === P.rate); P.rate = RATES.at((i + 1) % RATES.length)[0]; savePrefs(); syncPrefs(); sayPref($('prefRateL').textContent); });
+$('prefPrud').addEventListener('click', () => { P.prud = P.prud > 1 ? 1 : 1.3; savePrefs(); syncPrefs(); sayPref($('prefPrudL').textContent); });
+$('prefVib').addEventListener('click', () => { P.vib = !P.vib; savePrefs(); syncPrefs(); if (P.vib) vibrate(80); sayPref($('prefVibL').textContent + (VIB_OK ? '' : '. Questo telefono non vibra dal browser.')); });
+syncPrefs();
+$('appVer').textContent = 'Eco Fidato · versione ' + APP_VERSION + (IS_APP ? ' · app' : ' · anteprima');
+function setTab(prefsOpen) { $('tabHome').toggleAttribute('aria-current', false); $('toPrefs').toggleAttribute('aria-current', false);
+  (prefsOpen ? $('toPrefs') : $('tabHome')).setAttribute('aria-current', 'page'); }
+$('toPrefs').addEventListener('click', () => setTab(true));
+$('prefClose').addEventListener('click', () => setTab(false));
+$('tabHome').addEventListener('click', () => { if (!$('prefs').hidden) $('prefClose').click(); else $('padGo').focus(); });
+
+if (!VIB_OK) logMsg('Vibrazione non disponibile su questo browser (iPhone non la consente): restano suoni e voce.', 2);
+requestAnimationFrame(loop);
+})();
+</script>
+
+<script>
+// Installed app: the service worker always fetches the newest version when online, and keeps a copy for offline use.
+if ('serviceWorker' in navigator && location.protocol === 'https:' && !/claude/.test(location.hostname)) {
+  navigator.serviceWorker.register('sw.js').then(reg => reg.update()).catch(() => {});
+  let reloaded = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => { if (!reloaded) { reloaded = true; location.reload(); } });
+}
+</script>
+</body>
+</html>
