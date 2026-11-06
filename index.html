@@ -117,6 +117,12 @@ button, select, input { font: inherit; }
 [aria-pressed="true"] > .switch { background: var(--a-g); } [aria-pressed="true"] > .switch::after { transform: translateX(22px); }
 .info { display: flex; gap: 12px; padding: 14px 16px; font-size: 16px; color: var(--a-mut); } .info + .info { border-top: 1px solid var(--a-line); }
 .info svg { width: 22px; height: 22px; flex: none; color: var(--a-y); margin-top: 1px; }
+.sheet { position: absolute; inset: 0; z-index: 4; background: var(--a-bg); display: flex; flex-direction: column; justify-content: center; gap: 16px; padding: 28px max(20px, env(safe-area-inset-right, 0px)) 28px max(20px, env(safe-area-inset-left, 0px)); }
+.sheet h2 { margin: 0; font-size: clamp(30px, 8.5vw, 38px); line-height: 1.15; }
+.sheetsub { margin: 0 0 12px; color: var(--a-mut); font-size: 19px; }
+.sheet .primarybtn { min-height: 84px; font-size: 22px; }
+.primarybtn.alt { background: var(--a-card); color: var(--a-fg); box-shadow: inset 0 0 0 3px var(--a-y); }
+#user .armed { outline: 5px solid #64d2ff; outline-offset: 3px; }
 .primarybtn { width: 100%; min-height: 60px; border-radius: 18px; border: 0; background: var(--a-y); color: #000; font-weight: 700; font-size: 20px; cursor: pointer; }
 .tabbar { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--a-line); background: #111215f2;
   padding: 6px max(8px, env(safe-area-inset-right, 0px)) max(8px, env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px)); }
@@ -216,6 +222,10 @@ table.lv td, table.lv th { text-align: left; padding: 6px 4px; border-bottom: 1p
       <button class="row" id="prefPrud" type="button"><span class="ti" style="background:#ff9f0a" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg></span><span class="tt"><b>Prudenza</b><span>Prudenti: avvisa prima</span></span><span class="val" id="prefPrudL">Avvisi normali</span></button>
       <button class="row" id="prefVib" type="button" aria-pressed="true"><span class="ti" style="background:#30d158" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="3" width="8" height="18" rx="2"/><path d="M4 8v8M20 8v8"/></svg></span><span class="tt"><b>Vibrazione</b><span id="prefVibL">Vibrazione sì</span></span><span class="switch" aria-hidden="true"></span></button>
     </div>
+    <p class="eyebrow grouplabel">Accessibilità</p>
+    <div class="group">
+      <button class="row" id="prefGuide" type="button" aria-pressed="false"><span class="ti" style="background:#64d2ff" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11V5a2 2 0 0 1 4 0v6"/><path d="M13 9a2 2 0 0 1 4 0v4a6 6 0 0 1-6 6h-1a5 5 0 0 1-4-2l-2-3a1.6 1.6 0 0 1 2.6-1.9L9 14"/></svg></span><span class="tt"><b>Guida vocale ai tasti</b><span id="prefGuideL">Un tocco ascolti, due tocchi attivi</span></span><span class="switch" aria-hidden="true"></span></button>
+    </div>
     <p class="eyebrow grouplabel">Sicurezza</p>
     <div class="group">
       <div class="info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 4a3 3 0 0 1 6 0v17"/></svg><span>Non sostituisce il bastone o il cane guida. Quando non vede bene, te lo dice.</span></div>
@@ -224,6 +234,14 @@ table.lv td, table.lv th { text-align: left; padding: 6px 4px; border-bottom: 1p
     </div>
     <button class="primarybtn" id="prefClose" type="button">Fatto</button>
     <p class="foot" id="appVer">Eco Fidato</p>
+  </div>
+
+  <div class="sheet" id="askSR" hidden role="dialog" aria-modal="true" aria-labelledby="askSRq">
+    <p class="eyebrow">Benvenuto in Eco Fidato</p>
+    <h2 id="askSRq">Usi VoiceOver o TalkBack?</h2>
+    <p class="sheetsub">Se non li usi, l'app ti legge ogni tasto: un tocco per ascoltare, due tocchi per attivare.</p>
+    <button class="primarybtn" id="askYes" type="button">Sì, uso lo screen reader</button>
+    <button class="primarybtn alt" id="askNo" type="button">No, leggimi i tasti</button>
   </div>
 
   <nav class="tabbar" aria-label="Sezioni">
@@ -385,9 +403,9 @@ const S = {
   simT0: performance.now(), detBusy: false, lastDetT: 0,
 };
 const $ = id => document.getElementById(id);
-const APP_VERSION = '0.3.0';
+const APP_VERSION = '0.4.0';
 const IS_APP = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true || /github\.io$/.test(location.hostname);
-const P = { rate: 1, prud: 1, vib: true };
+const P = { rate: 1, prud: 1, vib: true, guide: null };
 try { Object.assign(P, JSON.parse(localStorage.getItem('ecoFidatoPrefs') || '{}')); } catch (e) {}
 const savePrefs = () => { try { localStorage.setItem('ecoFidatoPrefs', JSON.stringify(P)); } catch (e) {} };
 const view = $('view'), vctx = view.getContext('2d');
@@ -997,6 +1015,7 @@ function syncPrefs() {
   $('prefRateL').textContent = (RATES.find(r => r[0] === P.rate) || RATES[0])[1];
   $('prefPrudL').textContent = P.prud > 1 ? 'Avvisi prudenti' : 'Avvisi normali';
   $('prefVibL').textContent = P.vib ? 'Vibrazione sì' : 'Vibrazione no'; $('prefVib').setAttribute('aria-pressed', String(P.vib));
+  if ($('prefGuide')) $('prefGuide').setAttribute('aria-pressed', String(!!P.guide));
 }
 function sayPref(t) { audioInit(); S.speakAnyway = true; say(t); S.speakAnyway = false; vibrate(20); }
 $('toPrefs').addEventListener('click', () => { $('mainPads').hidden = true; $('prefs').hidden = false; $('toPrefs').setAttribute('aria-expanded', 'true'); syncPrefs(); $('prefRate').focus(); sayPref('Impostazioni. Velocità voce, prudenza, vibrazione, e il pulsante Fatto.'); });
@@ -1005,6 +1024,50 @@ $('prefRate').addEventListener('click', () => { const i = RATES.findIndex(r => r
 $('prefPrud').addEventListener('click', () => { P.prud = P.prud > 1 ? 1 : 1.3; savePrefs(); syncPrefs(); sayPref($('prefPrudL').textContent); });
 $('prefVib').addEventListener('click', () => { P.vib = !P.vib; savePrefs(); syncPrefs(); if (P.vib) vibrate(80); sayPref($('prefVibL').textContent + (VIB_OK ? '' : '. Questo telefono non vibra dal browser.')); });
 syncPrefs();
+
+// ------------------------------------------------------------------ voice guide to the buttons (for people who do not use a screen reader)
+// One tap reads the button (risk-free exploration, as in Slide Rule), a second tap on the same button activates it.
+// Never on with VoiceOver/TalkBack: the screen reader already reads every button, the app must not talk over it.
+const G = { armed: null, at: 0 };
+function labelOf(el) {
+  const base = (el.getAttribute('aria-label') || (el.querySelector('b') || el).textContent || '').trim().replace(/\s+/g, ' ');
+  const ids = (el.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean);
+  let desc = ids.map(i => $(i) ? $(i).textContent.trim() : '').filter(Boolean).join('. ');
+  if (!desc) { const sub = el.querySelector('.tt span, .tt .d'); if (sub) desc = sub.textContent.trim(); }
+  if (el.classList.contains('row') && el.querySelector('.val')) desc = 'Adesso: ' + el.querySelector('.val').textContent.trim();
+  if (el.getAttribute('aria-pressed') === 'true' && el.classList.contains('row')) desc = 'Attivo';
+  if (el.getAttribute('aria-pressed') === 'false' && el.classList.contains('row') && !el.querySelector('.val')) desc = 'Spento';
+  if (el.getAttribute('aria-current') === 'page') desc = 'Sei qui';
+  return base + (desc ? '. ' + desc : '') + '. Tocca di nuovo per attivare.';
+}
+function speakNow(t) { audioInit(); try { speechSynthesis.cancel(); } catch (e) {} S.speakAnyway = true; say(t, true); S.speakAnyway = false; }
+document.getElementById('user').addEventListener('click', e => {
+  if (!P.guide) return;
+  const el = e.target.closest('button'); if (!el || el.closest('#askSR')) return;
+  const now = performance.now();
+  if (G.armed === el && now - G.at < 5000) { el.classList.remove('armed'); G.armed = null; return; }
+  e.preventDefault(); e.stopImmediatePropagation();
+  if (G.armed) G.armed.classList.remove('armed');
+  G.armed = el; G.at = now; el.classList.add('armed');
+  beep({ freq: 1200, dur: 0.03, gain: 0.08, type: 'sine' }); if (P.vib) vibrate(15);
+  speakNow(labelOf(el));
+}, true);
+function setGuide(on, announce) {
+  P.guide = on; savePrefs(); syncPrefs();
+  if (G.armed) { G.armed.classList.remove('armed'); G.armed = null; }
+  if (announce) speakNow(on ? 'Guida vocale ai tasti attiva. Tocca una volta un tasto per sentire cosa fa, due volte per attivarlo.' : 'Guida vocale ai tasti spenta.');
+}
+$('prefGuide').addEventListener('click', () => setGuide(!P.guide, true));
+function askScreenReader() {
+  $('askSR').hidden = false; $('askYes').focus();
+  // a blind user without a screen reader hears the question at the first touch anywhere on the sheet
+  const once = () => { $('askSR').removeEventListener('pointerdown', once); if (!S.askSpoken) { S.askSpoken = true; speakNow('Usi VoiceOver o TalkBack? Il tasto in alto è Sì, quello in basso è No, leggimi i tasti.'); } };
+  $('askSR').addEventListener('pointerdown', once);
+}
+$('askYes').addEventListener('click', () => { $('askSR').hidden = true; setGuide(false, false); $('padGo').focus(); });
+$('askNo').addEventListener('click', () => { $('askSR').hidden = true; setGuide(true, true); $('padGo').focus(); });
+if (P.guide === null) askScreenReader();
+
 $('appVer').textContent = 'Eco Fidato · versione ' + APP_VERSION + (IS_APP ? ' · app' : ' · anteprima');
 function setTab(prefsOpen) { $('tabHome').toggleAttribute('aria-current', false); $('toPrefs').toggleAttribute('aria-current', false);
   (prefsOpen ? $('toPrefs') : $('tabHome')).setAttribute('aria-current', 'page'); }
