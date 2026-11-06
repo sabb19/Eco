@@ -407,7 +407,7 @@ const S = {
   simT0: performance.now(), detBusy: false, lastDetT: 0,
 };
 const $ = id => document.getElementById(id);
-const APP_VERSION = '0.5.0';
+const APP_VERSION = '0.5.1';
 const IS_APP = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true || /github\.io$/.test(location.hostname);
 const P = { rate: 1, prud: 1, vib: true, guide: null, depth: true };
 try { Object.assign(P, JSON.parse(localStorage.getItem('ecoFidatoPrefs') || '{}')); } catch (e) {}
@@ -596,8 +596,11 @@ function feedback(now) {
     if (l > 2) continue; if (l < lvl || (l === lvl && t.risk > (top ? top.risk : -1))) { top = t; lvl = l; } }
   // probable objects only speak if trust still meaningful, unless critical
   if (top && top.state === 'maybe' && lvl === 2 && top.trust < 0.15) { top = null; lvl = 9; }
-  const flash = $('flash'); flash.className = top ? (lvl === 1 ? 'l1' : 'l2') : '';
-  $('uCard').className = 'card' + (top ? ' l' + lvl : '');
+  // the red/yellow alert colours belong to the user's guidance only: never while guidance is off
+  // (the simulated scene keeps running in the background for the jury console)
+  const showAlert = top && S.guiding;
+  const flash = $('flash'); flash.className = showAlert ? (lvl === 1 ? 'l1' : 'l2') : '';
+  $('uCard').className = 'card' + (showAlert ? ' l' + lvl : '');
   $('saying').className = 'saying' + (top ? ' l' + lvl : '');
   if (!top) {
     if (S.top) { S.top = null; S.topLevel = 0; if (performance.now() - S.lastSayAt > 400) setQuiet(); }
