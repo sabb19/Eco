@@ -77,9 +77,18 @@ button, select, input { font: inherit; }
 .chip i { width: 9px; height: 9px; border-radius: 50%; background: var(--a-g); }
 .chip.mid i { background: var(--a-o); } .chip.bad i { background: var(--a-r); }
 #user .status { margin: 0; font-size: clamp(21px, 5.8vw, 26px); font-weight: 700; line-height: 1.25; min-height: 2.5em; color: var(--a-fg); }
-.camview { position: relative; border-radius: 22px; overflow: hidden; background: #000; border: 2px solid var(--a-line); }
-.camview canvas { display: block; width: 100%; height: auto; }
-.camtag { position: absolute; left: 10px; top: 10px; background: #000c; color: #fff; font-size: 14px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
+.gview { position: absolute; inset: 0; z-index: 3; background: #000; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
+.gview video, .gview canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.gview.nocam video, .gview.nocam canvas { display: none; }
+.gtop { position: relative; margin: max(12px, env(safe-area-inset-top, 0px)) 12px 0; background: #000000d9; color: #fff; border-radius: 22px; padding: 14px 16px; border: 3px solid transparent; }
+.gtop.l1 { border-color: #ff453a; background: #3a0d0fe6; } .gtop.l2 { border-color: #ffd60a; }
+.gtop .status { margin: 0; font-size: clamp(22px, 6vw, 28px); font-weight: 700; line-height: 1.25; color: #fff; }
+.gtop .chip { background: #ffffff26; color: #fff; }
+.gbtns { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 12px 12px max(14px, env(safe-area-inset-bottom, 0px)); background: linear-gradient(#0000, #000c 40%); }
+.gbtns button { min-height: 92px; border-radius: 22px; border: 0; font-size: 22px; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+.gbtns svg { width: 30px; height: 30px; }
+#gWhat { background: #1f2026f2; color: #fff; box-shadow: inset 0 0 0 3px var(--a-y); }
+#gStop { background: var(--a-y); color: var(--a-on); }
 .hero { display: flex; flex-direction: column; align-items: center; padding: 6px 0 0; }
 .gobtn { position: relative; width: min(54vw, 210px); aspect-ratio: 1; border-radius: 50%; border: 0; cursor: pointer;
   background: var(--a-card); color: var(--a-y); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
@@ -208,7 +217,6 @@ table.lv td, table.lv th { text-align: left; padding: 6px 4px; border-bottom: 1p
       <div class="cardhead"><span class="eyebrow">Adesso</span><span class="chip" id="uHealth"><i aria-hidden="true"></i><span id="uHealthT">Vista buona</span></span></div>
       <p class="status" id="uStatus" aria-live="polite">Pronto. Tocca "Avvia guida" per iniziare.</p>
     </section>
-    <div class="camview" id="uCamWrap" hidden aria-hidden="true"><canvas id="uCam" width="480" height="360"></canvas><span class="camtag">Fotocamera</span></div>
 
     <div class="hero">
       <button class="gobtn" id="padGo" type="button" aria-pressed="false" aria-describedby="goDesc">
@@ -259,6 +267,19 @@ table.lv td, table.lv th { text-align: left; padding: 6px 4px; border-bottom: 1p
     <button class="primarybtn" id="askYes" type="button">Sì, uso lo screen reader</button>
     <button class="primarybtn alt" id="askNo" type="button">No, leggimi i tasti</button>
   </div>
+
+  <section class="gview" id="gView" hidden aria-label="Guida attiva">
+    <video id="uVid" playsinline muted autoplay aria-hidden="true"></video>
+    <canvas id="uBox" aria-hidden="true"></canvas>
+    <div class="gtop" id="gCard">
+      <div class="cardhead"><span class="eyebrow" style="color:#ddd">Guida attiva</span><span class="chip" id="gHealth"><i aria-hidden="true"></i><span id="gHealthT">Vista buona</span></span></div>
+      <p class="status" id="gStatus" aria-live="polite">Guida attiva.</p>
+    </div>
+    <div class="gbtns">
+      <button id="gWhat" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>Cosa c'è?</button>
+      <button id="gStop" type="button"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6.5" y="6.5" width="11" height="11" rx="2"/></svg>Ferma guida</button>
+    </div>
+  </section>
 
   <nav class="tabbar" aria-label="Sezioni">
     <button class="tab" id="tabHome" type="button" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg><span>Guida</span></button>
@@ -422,7 +443,7 @@ const S = {
   simT0: performance.now(), detBusy: false, lastDetT: 0,
 };
 const $ = id => document.getElementById(id);
-const APP_VERSION = '0.6.3';
+const APP_VERSION = '0.7.0';
 const IS_APP = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true || /github\.io$/.test(location.hostname);
 // In the real app the demo scene never runs by itself: its pedestrian and bike would trigger real alerts. Only the jury console can start it.
 if (IS_APP) S.source = 'idle';
@@ -616,7 +637,7 @@ try { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; } catch (e) {}
 function say(text, urgent = false) {
   S.lastSayAt = performance.now();
   logMsg(text, urgent ? 1 : 2);
-  $('saying').textContent = text; if (S.guiding || S.speakAnyway) $('uStatus').textContent = text;
+  $('saying').textContent = text; if (S.guiding || S.speakAnyway) { $('uStatus').textContent = text; $('gStatus').textContent = text; }
   if (urgent) $('srAssert').textContent = text;
   if (!S.guiding && !S.speakAnyway) return;
   try {
@@ -641,7 +662,7 @@ function feedback(now) {
   // (the simulated scene keeps running in the background for the jury console)
   const showAlert = top && S.guiding && $('askSR').hidden && $('prefs').hidden;
   const flash = $('flash'); flash.className = showAlert ? (lvl === 1 ? 'l1' : 'l2') : '';
-  $('uCard').className = 'card' + (showAlert ? ' l' + lvl : '');
+  $('uCard').className = 'card' + (showAlert ? ' l' + lvl : ''); $('gCard').className = 'gtop' + (top && S.guiding ? ' l' + lvl : '');
   $('saying').className = 'saying' + (top ? ' l' + lvl : '');
   if (!top) {
     if (S.top) { S.top = null; S.topLevel = 0; if (performance.now() - S.lastSayAt > 400) setQuiet(); }
@@ -692,7 +713,7 @@ function alertPhrase(t, lvl) {
   if (t.inPath) { const side = freeSide(t); txt += side ? ', passa a ' + side : ', fermati'; }
   return txt;
 }
-function setQuiet() { $('saying').textContent = 'In silenzio: nessun pericolo.'; if (S.guiding) $('uStatus').textContent = 'Guida attiva. Nessun pericolo.'; }
+function setQuiet() { $('saying').textContent = 'In silenzio: nessun pericolo.'; if (S.guiding) { $('uStatus').textContent = 'Guida attiva. Nessun pericolo.'; $('gStatus').textContent = 'Nessun pericolo.'; } }
 
 // In the app, 'Cosa c'è?' must look through the real camera even when the guide is off.
 async function describeScene() {
@@ -737,7 +758,7 @@ function checkHealth(src, now) {
   const pill = $('health');
   pill.textContent = lvl === 'good' ? 'Buona' : lvl === 'low' ? 'Ridotta' : 'Non vedo bene';
   pill.className = 'pill ' + (lvl === 'good' ? 'good' : lvl === 'low' ? 'mid' : 'bad');
-  $('uHealth').className = 'chip ' + (lvl === 'good' ? '' : lvl === 'low' ? 'mid' : 'bad'); $('uHealthT').textContent = lvl === 'good' ? 'Vista buona' : lvl === 'low' ? 'Vista ridotta' : 'Non vedo bene';
+  $('uHealth').className = $('gHealth').className = 'chip ' + (lvl === 'good' ? '' : lvl === 'low' ? 'mid' : 'bad'); $('uHealthT').textContent = $('gHealthT').textContent = lvl === 'good' ? 'Vista buona' : lvl === 'low' ? 'Vista ridotta' : 'Non vedo bene';
   if (lvl !== S.healthSpoken && now - S.healthSpokenAt > 2500) {
     S.healthSpokenAt = now; const was = S.healthSpoken; S.healthSpoken = lvl;
     if (lvl === 'bad') { say('Non vedo bene. Usa il bastone.', true); vibrate([90, 60, 90, 60, 90, 60, 90]); }
@@ -1012,30 +1033,45 @@ function updateMetrics() {
   $('mTop').textContent = S.top ? `L${S.topLevel} ${nameOf(S.top.cls)} ${dirWord(S.top.cx)} ${fmtM(S.top.dist)}${S.top.state === 'maybe' ? ' (probabile)' : ''}` : 'nessuno';
 }
 
-// ------------------------------------------------------------------ live camera on the home screen (for low vision and companions)
-// Big boxes and Italian names; the danger the voice is talking about is drawn thick and red.
-const ucam = $('uCam'), uctx = ucam.getContext('2d');
-function drawUserCam() {
-  const vw = vid.videoWidth || 640, vh = vid.videoHeight || 480;
-  const W = 480, H = Math.round(480 * vh / vw) || 360; if (ucam.height !== H) ucam.height = H;
-  if (S.cover) { uctx.fillStyle = '#000'; uctx.fillRect(0, 0, W, H); } else uctx.drawImage(vid, 0, 0, W, H);
-  uctx.font = '700 18px "Atkinson Hyperlegible", sans-serif'; uctx.textAlign = 'left';
+// ------------------------------------------------------------------ guide screen: full-screen camera (for low vision and companions)
+// The phone plays the video natively (smooth); we only draw the boxes on a transparent layer on top.
+const uVid = $('uVid'), ubox = $('uBox'), ubctx = ubox.getContext('2d');
+function openGuideView(on) {
+  $('gView').hidden = !on;
+  for (const id of ['mainPads', 'prefs']) $(id).inert = on;
+  document.querySelector('#user .appbar').inert = on; document.querySelector('#user .tabbar').inert = on;
+  $('uStatus').setAttribute('aria-live', on ? 'off' : 'polite');
+  if (on) { $('gStatus').textContent = $('uStatus').textContent; $('gView').classList.toggle('nocam', !P.cam); $('gStop').focus(); }
+  else { try { uVid.srcObject = null; } catch (e) {} $('padGo').focus(); }
+}
+function drawGuideBoxes() {
+  const dpr = Math.min(2, window.devicePixelRatio || 1), cw = ubox.clientWidth, ch = ubox.clientHeight; if (!cw || !ch) return;
+  if (ubox.width !== Math.round(cw * dpr) || ubox.height !== Math.round(ch * dpr)) { ubox.width = Math.round(cw * dpr); ubox.height = Math.round(ch * dpr); }
+  const sim = S.source === 'sim', vw = sim ? 640 : (vid.videoWidth || 640), vh = sim ? 480 : (vid.videoHeight || 480);
+  const sc = Math.max(cw / vw, ch / vh), dx = (cw - vw * sc) / 2, dy = (ch - vh * sc) / 2;
+  ubctx.setTransform(dpr, 0, 0, dpr, 0, 0); ubctx.clearRect(0, 0, cw, ch);
+  if (sim) ubctx.drawImage(scene, dx, dy, vw * sc, vh * sc);
+  ubctx.font = '700 18px "Atkinson Hyperlegible", sans-serif'; ubctx.textAlign = 'left';
   for (const t of S.tracks) {
     if (t.state === 'tentative') continue;
     const b = boxOf(t), top = S.top && S.top.id === t.id && t.curLvl <= 2;
     const col = top && t.curLvl === 1 ? '#ff453a' : top ? '#ffd60a' : t.state === 'maybe' ? '#ff9f0a' : '#30d158';
-    uctx.strokeStyle = col; uctx.lineWidth = top ? 6 : 3; uctx.setLineDash(t.state === 'maybe' ? [10, 7] : []);
-    uctx.strokeRect(b.x * W, b.y * H, b.w * W, b.h * H); uctx.setLineDash([]);
+    const x = dx + b.x * vw * sc, y = dy + b.y * vh * sc, w = b.w * vw * sc, h = b.h * vh * sc;
+    ubctx.strokeStyle = col; ubctx.lineWidth = top ? 6 : 3; ubctx.setLineDash(t.state === 'maybe' ? [10, 7] : []);
+    ubctx.strokeRect(x, y, w, h); ubctx.setLineDash([]);
     const label = (t.state === 'maybe' ? 'probabile ' : '') + nameOf(t.cls) + ' ' + fmtM(t.dist);
-    const tw = uctx.measureText(label).width + 12, ly = Math.max(24, b.y * H);
-    uctx.fillStyle = col; uctx.fillRect(b.x * W, ly - 24, tw, 26); uctx.fillStyle = '#000'; uctx.fillText(label, b.x * W + 6, ly - 5);
+    const tw = ubctx.measureText(label).width + 12, ly = Math.max(26, y);
+    ubctx.fillStyle = col; ubctx.fillRect(x, ly - 26, tw, 28); ubctx.fillStyle = '#000'; ubctx.fillText(label, x + 6, ly - 7);
   }
 }
+$('gStop').addEventListener('click', () => setGuiding(false));
+$('gWhat').addEventListener('click', () => { audioInit(); describeScene(); });
 
 // ------------------------------------------------------------------ main loop
 let lastHealth = 0, lastMetrics = 0;
 function loop() {
   const now = performance.now();
+  if (!$('gView').hidden && P.cam) drawGuideBoxes();
   if (S.source === 'sim') {
     const t = (now - S.simT0) / 1000; const objs = simObjects(t); drawSim(objs); if (P.depth) simDepth(objs, now);
     const tc = performance.now(); pipeline(simDetect(objs), tc);
@@ -1043,9 +1079,7 @@ function loop() {
     if (!$('jury').hidden) render(scene);
   } else if (vid.readyState >= 2) {
     detectFrame(now); if (P.depth && S.guiding) { ensureDepth(); depthTick(now); }
-    const showCam = P.cam && S.source === 'camera' && S.guiding && !$('user').hidden;
-    if ($('uCamWrap').hidden === showCam) $('uCamWrap').hidden = !showCam;
-    if (showCam) drawUserCam();
+    if (!$('gView').hidden && P.cam && uVid.srcObject !== vid.srcObject) { uVid.srcObject = vid.srcObject; uVid.play().catch(() => {}); }
     if (now - lastHealth > 250) { lastHealth = now; if (S.cover) { pctx.fillStyle = '#000'; pctx.fillRect(0, 0, 80, 60); S.health.luma = 0; checkHealth(probe, now); } else checkHealth(vid, now); }
     if (!$('jury').hidden) { if (view.width !== 640 || Math.abs(view.height - 640 * vid.videoHeight / vid.videoWidth) > 2) { view.width = 640; view.height = Math.round(640 * vid.videoHeight / vid.videoWidth) || 480; }
       if (S.cover) { vctx.fillStyle = '#000'; vctx.fillRect(0, 0, view.width, view.height); render(probe); } else render(vid); }
@@ -1071,6 +1105,7 @@ function setGuiding(on) {
   $('goLabel').textContent = on ? 'Ferma guida' : 'Avvia guida';
   $('jGo').textContent = on ? 'Ferma guida' : 'Avvia guida';
   if (on) {
+    openGuideView(true);
     if (IS_APP && S.source !== 'camera') { if (S.source === 'sim') { S.source = 'idle'; resetTracker(); } $('srcCam').click(); }
     vibrate([60, 60, 60]); beep({ freq: 660, dur: 0.08 }); setTimeout(() => beep({ freq: 880, dur: 0.1 }), 110);
     try { speechSynthesis.cancel(); } catch (e) {}
@@ -1080,7 +1115,7 @@ function setGuiding(on) {
     S.speakAnyway = true; say(msg); S.speakAnyway = false; S.lastBeat = performance.now();
     try { navigator.wakeLock && navigator.wakeLock.request('screen').catch(() => {}); } catch (e) {}
   } else {
-    $('uCamWrap').hidden = true;
+    openGuideView(false);
     vibrate(120); beep({ freq: 880, dur: 0.08 }); setTimeout(() => beep({ freq: 560, dur: 0.12 }), 110);
     S.speakAnyway = true; say('Guida in pausa.'); S.speakAnyway = false;
   }
@@ -1297,7 +1332,7 @@ function setGuide(on, announce) {
   if (announce) speakNow(on ? 'Guida vocale ai tasti attiva. Tocca una volta un tasto per sentire cosa fa, due volte per attivarlo.' : 'Guida vocale ai tasti spenta.');
 }
 $('prefGuide').addEventListener('click', () => setGuide(!P.guide, true));
-$('prefCam').addEventListener('click', () => { P.cam = !P.cam; savePrefs(); syncPrefs(); sayPref(P.cam ? 'Fotocamera visibile durante la guida.' : 'Fotocamera nascosta.'); });
+$('prefCam').addEventListener('click', () => { P.cam = !P.cam; savePrefs(); syncPrefs(); sayPref(P.cam ? 'Fotocamera visibile durante la guida.' : 'Fotocamera nascosta.'); $('gView').classList.toggle('nocam', !P.cam); });
 $('prefDepth').addEventListener('click', () => { P.depth = !P.depth; savePrefs(); syncPrefs(); if (!P.depth) { D.dets = []; } sayPref(P.depth ? 'Ostacoli senza nome attivi.' : 'Ostacoli senza nome spenti. Riconosco solo gli oggetti con un nome.'); });
 function askScreenReader() {
   $('askSR').hidden = false; $('askYes').focus();
