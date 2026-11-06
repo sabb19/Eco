@@ -224,6 +224,7 @@ table.lv td, table.lv th { text-align: left; padding: 6px 4px; border-bottom: 1p
     </div>
     <p class="eyebrow grouplabel">Accessibilità</p>
     <div class="group">
+      <button class="row" id="prefDepth" type="button" aria-pressed="true"><span class="ti" style="background:#bf5af2" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 8l7-5 7 5M5 16l7 5 7-5"/></svg></span><span class="tt"><b>Ostacoli senza nome</b><span>Pali, gradini, cantieri. Scarica qualche decina di MB la prima volta</span></span><span class="switch" aria-hidden="true"></span></button>
       <button class="row" id="prefGuide" type="button" aria-pressed="false"><span class="ti" style="background:#64d2ff" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11V5a2 2 0 0 1 4 0v6"/><path d="M13 9a2 2 0 0 1 4 0v4a6 6 0 0 1-6 6h-1a5 5 0 0 1-4-2l-2-3a1.6 1.6 0 0 1 2.6-1.9L9 14"/></svg></span><span class="tt"><b>Guida vocale ai tasti</b><span id="prefGuideL">Un tocco ascolti, due tocchi attivi</span></span><span class="switch" aria-hidden="true"></span></button>
     </div>
     <p class="eyebrow grouplabel">Sicurezza</p>
@@ -297,6 +298,7 @@ table.lv td, table.lv th { text-align: left; padding: 6px 4px; border-bottom: 1p
           <div class="metric"><div class="k">Recuperi dopo occlusione</div><div class="v" id="mRec">–</div></div>
           <div class="metric"><div class="k">Tempo medio di ri-aggancio</div><div class="v" id="mRecT">–</div></div>
           <div class="metric"><div class="k">Cambi di ID (simulazione)</div><div class="v" id="mSw">–</div></div>
+          <div class="metric"><div class="k">Profondità (ostacoli senza nome)</div><div class="v" id="mDepth" style="font-size:16px">–</div></div>
           <div class="metric"><div class="k">Pericolo principale</div><div class="v" id="mTop" style="font-size:16px">–</div></div>
         </div>
         <p class="note">La latenza mostrata esclude l'uscita audio del telefono. Distanze stimate dall'altezza del riquadro: indicative.</p>
@@ -310,6 +312,8 @@ table.lv td, table.lv th { text-align: left; padding: 6px 4px; border-bottom: 1p
             <tr><td>Vibrazione per gli allarmi, suono per la direzione, una parola per l'oggetto</td><td>Con il bastone il carico mentale era 74,7% con l'audio e 3,3% con la vibrazione (6 persone); gli utenti preferiscono audio e vibrazione insieme (19 persone). <a href="https://cvhci.iar.kit.edu/~dkoester/publications/martinezICCHP2014tlx.pdf" target="_blank" rel="noopener">Martinez</a>, <a href="https://arxiv.org/pdf/2504.06379" target="_blank" rel="noopener">Soltani</a></td></tr>
             <tr><td>Frasi d'azione: "passa a sinistra", "fermati", "in arrivo da destra"</td><td>15 utenti su 16 preferiscono la guida passo-passo alla descrizione dell'ambiente. <a href="https://arxiv.org/pdf/2504.06379" target="_blank" rel="noopener">Soltani</a></td></tr>
             <tr><td>Avviso "ostacolo in alto"</td><td>13% ha incidenti alla testa ogni mese; 84,5% vuole questo rilevamento. <a href="https://tr.soe.ucsc.edu/research/technical-reports/UCSC-SOE-10-24" target="_blank" rel="noopener">Manduchi</a>, <a href="https://piet.apps01.yorku.ca/wp-content/uploads/2020/08/Shortcomings-of-the-White-Cane.pdf" target="_blank" rel="noopener">Meshram</a></td></tr>
+            <tr><td>Ostacoli senza nome (pali, gradini, cantieri) dalla profondità</td><td>Il rilevatore conosce solo 80 tipi di oggetti; con il bastone gli incidenti alla testa e con ostacoli fissi sono frequenti. La profondità segnala ciò che sporge dal pavimento senza doverlo riconoscere. <a href="https://arxiv.org/abs/2406.09414" target="_blank" rel="noopener">Depth Anything V2</a></td></tr>
+            <tr><td>Guida vocale ai tasti solo senza screen reader</td><td>Gli esperti di TalkBack usano soprattutto tocco-per-ascoltare e doppio tocco; l'app non deve parlare sopra lo screen reader. <a href="https://mohitjaindr.github.io/pdfs/c32-chi-2021.pdf" target="_blank" rel="noopener">Jain, CHI 2021</a>, <a href="https://faculty.washington.edu/wobbrock/pubs/assets-08.pdf" target="_blank" rel="noopener">Slide Rule</a></td></tr>
             <tr><td>Bici, moto e auto in avvicinamento hanno la priorità più alta</td><td>82% si sente insicuro per il comportamento dei ciclisti, 77% per i monopattini. <a href="https://media.rnib.org.uk/documents/In_My_Way_-_Navigating_pedestrian_journeys_with_sight_loss_2025_PDF.pdf" target="_blank" rel="noopener">RNIB 2025</a></td></tr>
             <tr><td>Un solo oggetto parla alla volta, silenzio quando la via è libera, niente ripetizioni</td><td>La vibrazione continua di WeWALK è tra le critiche degli utenti; il sovraccarico è il rischio principale dell'audio. <a href="https://www.applevis.com/comment/172442" target="_blank" rel="noopener">AppleVis</a></td></tr>
             <tr><td>"Probabile" per gli oggetti nascosti, "Non vedo bene" quando la visione cala</td><td>Nessuno dei 7 prodotti analizzati comunica la propria incertezza; il brief lo chiede esplicitamente.</td></tr>
@@ -377,7 +381,7 @@ table.lv td, table.lv th { text-align: left; padding: 6px 4px; border-bottom: 1p
 (() => {
 'use strict';
 // ------------------------------------------------------------------ constants
-const NAMES = { person:'persona', bicycle:'bici', car:'auto', motorcycle:'moto', bus:'autobus', truck:'camion', dog:'cane', cat:'gatto',
+const NAMES = { obstacle:'ostacolo', person:'persona', bicycle:'bici', car:'auto', motorcycle:'moto', bus:'autobus', truck:'camion', dog:'cane', cat:'gatto',
   chair:'sedia', bench:'panchina', 'potted plant':'vaso', 'fire hydrant':'idrante', 'stop sign':'cartello', 'traffic light':'semaforo',
   'parking meter':'parchimetro', suitcase:'valigia', backpack:'zaino', umbrella:'ombrello', skateboard:'skateboard', 'dining table':'tavolo',
   couch:'divano', bed:'letto', toilet:'water', tv:'televisore', refrigerator:'frigorifero', bottle:'bottiglia', cup:'tazza', handbag:'borsa' };
@@ -403,9 +407,9 @@ const S = {
   simT0: performance.now(), detBusy: false, lastDetT: 0,
 };
 const $ = id => document.getElementById(id);
-const APP_VERSION = '0.4.0';
+const APP_VERSION = '0.5.0';
 const IS_APP = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true || /github\.io$/.test(location.hostname);
-const P = { rate: 1, prud: 1, vib: true, guide: null };
+const P = { rate: 1, prud: 1, vib: true, guide: null, depth: true };
 try { Object.assign(P, JSON.parse(localStorage.getItem('ecoFidatoPrefs') || '{}')); } catch (e) {}
 const savePrefs = () => { try { localStorage.setItem('ecoFidatoPrefs', JSON.stringify(P)); } catch (e) {} };
 const view = $('view'), vctx = view.getContext('2d');
@@ -435,7 +439,7 @@ function predictTrack(t, dt) {
 function boxOf(t) { return { x: t.cx - t.w / 2, y: t.cy - t.h / 2, w: t.w, h: t.h }; }
 function newTrack(d, now) {
   return { id: S.nextId++, cls: d.cls, cx: d.x + d.w / 2, cy: d.y + d.h / 2, w: d.w, h: d.h, ar: d.w / Math.max(d.h, 1e-3),
-    vx: 0, vy: 0, vh: 0, hits: 1, born: now, lastSeen: now, state: 'tentative', score: d.score, trust: d.score, occludedAt: 0, gt: d.gt };
+    vx: 0, vy: 0, vh: 0, hits: 1, born: now, lastSeen: now, state: 'tentative', score: d.score, trust: d.score, occludedAt: 0, gt: d.gt, distM: d.distM };
 }
 function updateTrack(t, d, now) {
   const dt = Math.max(1e-3, (now - t.lastUpd) / 1000 || 0.05);
@@ -451,9 +455,10 @@ function updateTrack(t, d, now) {
   t.vx = clamp(t.vx, -1.5, 1.5); t.vy = clamp(t.vy, -1.5, 1.5); t.vh = clamp(t.vh, -1.5, 1.5);
   t.ar = 0.8 * t.ar + 0.2 * (d.w / Math.max(d.h, 1e-3)); t.w = t.h * t.ar;
   t.score = 0.6 * t.score + 0.4 * d.score;
+  if (d.distM != null) t.distM = t.distM == null ? d.distM : 0.6 * t.distM + 0.4 * d.distM;
   if (t.state === 'maybe') {
     const occ = (now - t.occludedAt) / 1000;
-    if (occ > 0.5) { S.recov++; S.recovTimes.push(occ); logMsg(`Ritrovata ID ${t.id} (${nameOf(t.cls)}) dopo ${occ.toFixed(1)} s nascosta`, 0); }
+    if (occ > 0.5 && t.cls !== 'obstacle') { S.recov++; S.recovTimes.push(occ); logMsg(`Ritrovata ID ${t.id} (${nameOf(t.cls)}) dopo ${occ.toFixed(1)} s nascosta`, 0); }
   }
   t.hits++; t.lastSeen = now; t.state = t.hits >= 2 ? 'seen' : 'tentative';
   if (d.gt != null) {
@@ -471,6 +476,8 @@ function associate(dets, now) {
       for (const d of pool) { if (used.has(d) || d.cls !== t.cls) continue;
         const o = iou(boxOf(t), d);
         let s = o;
+        // depth obstacles come from a coarse grid: match them by centre distance as well
+        if (t.cls === 'obstacle' && s < minIou && Math.hypot(d.x + d.w / 2 - t.cx, d.y + d.h / 2 - t.cy) < 0.09) s = minIou + 0.005;
         if (o < minIou && allowGate && t.state === 'maybe') {
           const dist = Math.hypot(d.x + d.w / 2 - t.cx, d.y + d.h / 2 - t.cy);
           if (dist < sigmaOf(t, now) + 0.06) s = minIou + 0.01 * (1 - dist);
@@ -504,13 +511,13 @@ function ageTracks(now) {
   for (const t of S.tracks) {
     if (t.state === 'maybe') {
       const age = (now - t.occludedAt) / 1000;
-      if (age > COAST(t.cls) * healthCoast) { t.state = 'lost'; t.lostAt = now; S.lost.push(t); if (!t.edge) S.losses++; else t.noCount = true; if (S.top && S.top.id === t.id) cueLost(); }
+      if (age > COAST(t.cls) * healthCoast) { t.state = 'lost'; t.lostAt = now; S.lost.push(t); if (!t.edge && t.cls !== 'obstacle') S.losses++; else t.noCount = true; if (S.top && S.top.id === t.id) cueLost(); }
     }
     // trust: calibrated score when seen, exponential decay while hidden
     let base = clamp(t.score * 1.1, 0, 1);
     if (S.health.level === 'low') base *= 0.7; if (S.health.level === 'bad') base *= 0.35;
     t.trust = t.state === 'maybe' ? base * Math.exp(-((now - t.occludedAt) / 1000) / 0.9) : base;
-    t.dist = distOf(t.cls, t.h);
+    t.dist = t.distM != null ? t.distM : distOf(t.cls, t.h);
     t.ttc = t.vh > 0.004 ? t.h / t.vh : Infinity;
   }
   for (const t of S.tracks) if (t.state === 'maybe' && (t.cx - t.w / 2 > 1 || t.cx + t.w / 2 < 0 || t.cy - t.h / 2 > 1)) t.state = 'dead'; // left the field of view
@@ -605,8 +612,8 @@ function feedback(now) {
   if (now - S.lastSayAt > 300) $('saying').textContent = cur;
   if (changed) {
     const key = top.id + ':' + lvl + ':' + (maybe ? 'm' : 's');
-    if (!S.spoken.has(key) || now - S.spoken.get(key) > 6000) {
-      S.spoken.set(key, now);
+    if ((!S.spoken.has(key) || now - S.spoken.get(key) > 6000) && !(S.lastPhrase === phrase && now - S.lastPhraseAt < 4000)) {
+      S.spoken.set(key, now); S.lastPhrase = phrase; S.lastPhraseAt = now;
       say(phrase, lvl === 1);
     }
     if (lvl === 1 && P.vib) vibrate([220, 70, 220, 70, 220]);
@@ -692,6 +699,8 @@ function simObjects(t) {
   if (T < 10.5) { const p = T / 10.5; const h = 0.40, w = 0.13; const cx = -0.05 + 1.1 * p; objs.push({ gt: cyc + 1, cls: 'person', x: cx - w / 2, y: 0.80 - h, w, h, behind: true }); }
   // bicycle approaching in front, slightly right of centre
   if (T > 8 && T < 13.6) { const p = (T - 8) / 5.6; const e = p * p; const h = 0.08 + 0.52 * e, w = h * 1.45; const cx = 0.66 - 0.08 * e; const bottom = 0.52 + 0.46 * e; objs.push({ gt: cyc + 2, cls: 'bicycle', x: cx - w / 2, y: bottom - h, w, h, behind: false }); }
+  // a pole in the path: COCO has no class for it, only the depth layer can see it
+  if (T > 1 && T < 6.5) { const p = (T - 1) / 5.5; const bottom = 0.80 + 0.17 * p; const h = 0.30 + 0.45 * p, w = 0.028 + 0.03 * p; const cx = 0.37 - 0.05 * p; objs.push({ gt: cyc + 5, cls: 'pole', x: cx - w / 2, y: bottom - h, w, h, behind: false }); }
   objs.push({ gt: 3, cls: 'potted plant', x: 0.84, y: 0.62, w: 0.09, h: 0.17, behind: false });
   objs.push({ gt: 4, cls: 'bench', x: 0.02, y: 0.62, w: 0.24, h: 0.14, behind: false });
   return objs;
@@ -704,6 +713,7 @@ let rngS = 7; const rnd = () => { rngS = (rngS * 16807) % 2147483647; return rng
 function simDetect(objs) {
   const dets = [];
   for (const o of objs) {
+    if (o.cls === 'pole') continue; // unknown to the object detector
     let vis = 1; if (o.behind) vis = 1 - overlapFrac(o, OCC);
     if (vis < 0.45) continue;
     let score = 0.72 + 0.18 * rnd() - (vis < 0.8 ? 0.32 : 0);
@@ -731,6 +741,7 @@ function drawSim(objs) {
     if (o.cls === 'person') { c.fillStyle = '#2d3a6b'; c.fillRect(x + w * 0.22, y + h * 0.2, w * 0.56, h * 0.48); c.fillStyle = '#1e2433'; c.fillRect(x + w * 0.25, y + h * 0.66, w * 0.2, h * 0.34); c.fillRect(x + w * 0.55, y + h * 0.66, w * 0.2, h * 0.34); c.fillStyle = '#d9a07b'; c.beginPath(); c.arc(x + w / 2, y + h * 0.1, h * 0.09, 0, 7); c.fill(); }
     else if (o.cls === 'bicycle') { c.strokeStyle = '#1b1b1b'; c.lineWidth = Math.max(2, w * 0.05); const r = h * 0.28; c.beginPath(); c.arc(x + r, y + h - r, r, 0, 7); c.stroke(); c.beginPath(); c.arc(x + w - r, y + h - r, r, 0, 7); c.stroke(); c.strokeStyle = '#b3261e'; c.beginPath(); c.moveTo(x + r, y + h - r); c.lineTo(x + w * 0.45, y + h * 0.35); c.lineTo(x + w - r, y + h - r); c.moveTo(x + w * 0.45, y + h * 0.35); c.lineTo(x + w * 0.7, y + h * 0.3); c.stroke(); c.fillStyle = '#3a3a3a'; c.fillRect(x + w * 0.35, y, w * 0.25, h * 0.32); c.fillStyle = '#d9a07b'; c.beginPath(); c.arc(x + w * 0.48, y + h * 0.02, h * 0.07, 0, 7); c.fill(); }
     else if (o.cls === 'potted plant') { c.fillStyle = '#8a5a3c'; c.fillRect(x + w * 0.2, y + h * 0.55, w * 0.6, h * 0.45); c.fillStyle = '#3f7a3a'; c.beginPath(); c.arc(x + w / 2, y + h * 0.35, w * 0.45, 0, 7); c.fill(); }
+    else if (o.cls === 'pole') { c.fillStyle = '#5b6470'; c.fillRect(x, y, w, h); c.fillStyle = '#d9d9d9'; c.fillRect(x, y + h * 0.12, w, h * 0.05); }
     else if (o.cls === 'bench') { c.fillStyle = '#6b4a2b'; c.fillRect(x, y + h * 0.35, w, h * 0.2); c.fillRect(x, y, w, h * 0.18); c.fillStyle = '#333'; c.fillRect(x + w * 0.08, y + h * 0.55, w * 0.06, h * 0.45); c.fillRect(x + w * 0.86, y + h * 0.55, w * 0.06, h * 0.45); }
   };
   objs.filter(o => o.behind).forEach(draw);
@@ -740,6 +751,137 @@ function drawSim(objs) {
   objs.filter(o => !o.behind).forEach(draw);
   if (S.dark) { c.fillStyle = 'rgba(0,0,0,0.9)'; c.fillRect(0, 0, W, H); for (let i = 0; i < 900; i++) { c.fillStyle = `rgba(255,255,255,${rnd() * 0.12})`; c.fillRect(rnd() * W, rnd() * H, 2, 2); } }
   if (S.cover) { c.fillStyle = '#050505'; c.fillRect(0, 0, W, H); }
+}
+
+
+// ------------------------------------------------------------------ depth layer: obstacles without a name (poles, steps, building sites)
+// A small monocular depth model (Depth Anything V2 Small) runs in a worker, a few frames per second.
+// It does not need to know what the object is: something rising from the floor, close and in front, is an obstacle.
+const CAM_H = 1.3, TAN_HALF_V = Math.tan(30 * Math.PI / 180); // phone on the chest, ~60 deg vertical field of view
+const GW = 32, GH = 24;
+const D = { worker: null, ready: false, loading: false, busy: false, failed: '', device: '', ms: 0, lastSent: 0, grid: null, gridAt: 0, dets: [], detsAt: 0 };
+const floorDistAt = y => y > 0.5 ? CAM_H / ((y - 0.5) * 2 * TAN_HALF_V) : Infinity;
+function median(a) { if (!a.length) return NaN; const b = a.slice().sort((x, y) => x - y); return b[b.length >> 1]; }
+// grid: relative inverse depth (bigger = closer), GW x GH, row-major
+function depthObstacles(g, now) {
+  const ref = [];
+  for (let gy = 0; gy < GH; gy++) { const y = (gy + 0.5) / GH; if (y < 0.88) continue;
+    for (let gx = 0; gx < GW; gx++) { const x = (gx + 0.5) / GW; if (x > 0.2 && x < 0.8) ref.push(g[gy * GW + gx]); } }
+  const r = median(ref); if (!(r > 1e-6)) return [];
+  const k = floorDistAt(0.94) * r; // metric scale from the floor just ahead of the feet
+  const flag = new Uint8Array(GW * GH), dist = new Float32Array(GW * GH);
+  for (let gy = 0; gy < GH; gy++) { const y = (gy + 0.5) / GH; if (y > 0.86) continue;
+    for (let gx = 0; gx < GW; gx++) { const x = (gx + 0.5) / GW; if (x < 0.12 || x > 0.88) continue;
+      const i = gy * GW + gx, v = g[i]; if (!(v > 1e-6)) continue;
+      const dm = k / v; dist[i] = dm;
+      if (dm < 3.6 && dm < floorDistAt(y) * 0.7) flag[i] = 1; } }
+  // cells covered by objects the detector already names are not 'unnamed obstacles'
+  const named = S.tracks.filter(t => t.cls !== 'obstacle' && t.state !== 'tentative').map(boxOf);
+  for (let i = 0; i < GW * GH; i++) { if (!flag[i]) continue; const x = (i % GW + 0.5) / GW, y = (((i / GW) | 0) + 0.5) / GH;
+    if (named.some(b => x > b.x - 0.01 && x < b.x + b.w + 0.01 && y > b.y - 0.01 && y < b.y + b.h + 0.01)) flag[i] = 0; }
+  // connected regions
+  const seen = new Uint8Array(GW * GH), out = [];
+  for (let i = 0; i < GW * GH; i++) { if (!flag[i] || seen[i]) continue;
+    const stack = [i], cells = []; seen[i] = 1;
+    while (stack.length) { const c = stack.pop(); cells.push(c); const cx = c % GW, cy = (c / GW) | 0;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = cx + dx, ny = cy + dy; if (nx < 0 || ny < 0 || nx >= GW || ny >= GH) continue; const n = ny * GW + nx; if (flag[n] && !seen[n]) { seen[n] = 1; stack.push(n); } } }
+    if (cells.length < 5) continue;
+    let x0 = GW, x1 = 0, y0 = GH, y1 = 0; const ds = [];
+    for (const c of cells) { const cx = c % GW, cy = (c / GW) | 0; x0 = Math.min(x0, cx); x1 = Math.max(x1, cx); y0 = Math.min(y0, cy); y1 = Math.max(y1, cy); ds.push(dist[c]); }
+    ds.sort((a, b) => a - b);
+    out.push({ cls: 'obstacle', score: 0.62, x: x0 / GW, y: y0 / GH, w: (x1 - x0 + 1) / GW, h: (y1 - y0 + 1) / GH, distM: ds[Math.floor(ds.length * 0.25)], depth: true });
+  }
+  return out;
+}
+// obstacles already named by the object detector are not repeated
+function depthDets(now) {
+  if (!P.depth || now - D.detsAt > 900) return [];
+  return D.dets.filter(d => !S.tracks.some(t => t.cls !== 'obstacle' && t.state !== 'tentative' && overlapFrac(d, boxOf(t)) > 0.6));
+}
+function setDepthResult(grid, now) {
+  D.grid = grid; D.gridAt = now; D.dets = S.cover ? [] : depthObstacles(grid, now); D.detsAt = now;
+}
+// simulation: synthetic depth of floor + objects (the kiosk is left out: it only serves as the occluder in the demo)
+function simDepth(objs, now) {
+  if (now - D.gridAt < 250) return;
+  const g = new Float32Array(GW * GH);
+  for (let gy = 0; gy < GH; gy++) { const y = (gy + 0.5) / GH; const base = y > 0.5 ? 1 / floorDistAt(y) : 1 / 14;
+    for (let gx = 0; gx < GW; gx++) g[gy * GW + gx] = base; }
+  for (const o of objs) { const dObj = floorDistAt(Math.min(0.99, o.y + o.h)); if (!isFinite(dObj)) continue;
+    for (let gy = 0; gy < GH; gy++) { const y = (gy + 0.5) / GH; if (y < o.y || y > o.y + o.h) continue;
+      for (let gx = 0; gx < GW; gx++) { const x = (gx + 0.5) / GW; if (x < o.x - 0.5 / GW || x > o.x + o.w + 0.5 / GW) continue;
+        const i = gy * GW + gx; g[i] = Math.max(g[i], 1 / dObj); } } }
+  const noise = S.dark ? 0.35 : 0.04;
+  for (let i = 0; i < g.length; i++) g[i] *= 1 + (rnd() - 0.5) * noise;
+  if (S.cover) g.fill(0);
+  D.ms = 0; setDepthResult(g, now);
+}
+const WORKER_SRC = `
+import { pipeline, RawImage } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.7.6';
+let est = null;
+self.onmessage = async (e) => {
+  const m = e.data;
+  if (m.type === 'init') {
+    for (const device of (m.webgpu ? ['webgpu', 'wasm'] : ['wasm'])) {
+      try { est = await pipeline('depth-estimation', 'onnx-community/depth-anything-v2-small', { device, dtype: device === 'webgpu' ? 'fp16' : 'q8' });
+        self.postMessage({ type: 'ready', device }); return; } catch (err) { self.postMessage({ type: 'log', msg: device + ': ' + err }); }
+    }
+    self.postMessage({ type: 'error', msg: 'modello non disponibile' }); return;
+  }
+  if (m.type === 'frame' && est) {
+    const t0 = performance.now();
+    try {
+      const img = new RawImage(new Uint8ClampedArray(m.buf), m.w, m.h, 4);
+      const out = await est(img);
+      const t = out.predicted_depth; const dims = t.dims; const H = dims[dims.length - 2], W = dims[dims.length - 1]; const d = t.data;
+      const GW = ${GW}, GH = ${GH}, g = new Float32Array(GW * GH);
+      for (let gy = 0; gy < GH; gy++) for (let gx = 0; gx < GW; gx++) {
+        const ys = Math.floor(gy * H / GH), ye = Math.floor((gy + 1) * H / GH), xs = Math.floor(gx * W / GW), xe = Math.floor((gx + 1) * W / GW);
+        let s = 0, n = 0; for (let y = ys; y < ye; y += 2) for (let x = xs; x < xe; x += 2) { s += d[y * W + x]; n++; }
+        g[gy * GW + gx] = n ? s / n : 0; }
+      self.postMessage({ type: 'grid', grid: g, ms: performance.now() - t0 }, [g.buffer]);
+    } catch (err) { self.postMessage({ type: 'fail', msg: String(err) }); }
+  }
+};`;
+function ensureDepth() {
+  if (!P.depth || D.worker || D.failed) return;
+  try {
+    D.worker = new Worker(URL.createObjectURL(new Blob([WORKER_SRC], { type: 'text/javascript' })), { type: 'module' });
+    D.loading = true;
+    D.worker.onmessage = e => { const m = e.data;
+      if (m.type === 'ready') { D.ready = true; D.loading = false; D.device = m.device; logMsg('Modello di profondità pronto (' + m.device + ')', 0); }
+      else if (m.type === 'grid') { D.busy = false; D.ms = m.ms; setDepthResult(m.grid, performance.now()); }
+      else if (m.type === 'fail') { D.busy = false; }
+      else if (m.type === 'error') { D.failed = m.msg; D.loading = false; logMsg('Profondità non disponibile: ' + m.msg, 0); }
+    };
+    D.worker.onerror = () => { D.failed = 'worker'; D.loading = false; };
+    D.worker.postMessage({ type: 'init', webgpu: !!navigator.gpu });
+  } catch (e) { D.failed = String(e); }
+}
+const dcan = document.createElement('canvas'); dcan.width = 256; dcan.height = 192; const dctx = dcan.getContext('2d', { willReadFrequently: true });
+function depthTick(now) {
+  if (!P.depth || S.source === 'sim' || !D.ready || D.busy || now - D.lastSent < 280 || vid.readyState < 2 || S.cover) return;
+  D.busy = true; D.lastSent = now;
+  dctx.drawImage(vid, 0, 0, 256, 192); const im = dctx.getImageData(0, 0, 256, 192);
+  D.worker.postMessage({ type: 'frame', buf: im.data.buffer, w: 256, h: 192 }, [im.data.buffer]);
+}
+function depthStatus() {
+  if (!P.depth) return 'spenta';
+  if (S.source === 'sim') return 'simulata · ' + D.dets.length + ' ostacoli';
+  if (D.failed) return 'non disponibile';
+  if (D.loading) return 'carico il modello…';
+  if (D.ready) return Math.round(D.ms) + ' ms · ' + D.device + ' · ' + D.dets.length + ' ostacoli';
+  return '–';
+}
+function drawDepthInset() {
+  if (!D.grid || performance.now() - D.gridAt > 1500) return;
+  const W = view.width, iw = 128, ih = 96, x0 = W - iw - 8, y0 = 8; let mx = 1e-6;
+  for (const v of D.grid) mx = Math.max(mx, v);
+  for (let gy = 0; gy < GH; gy++) for (let gx = 0; gx < GW; gx++) { const v = D.grid[gy * GW + gx] / mx; const c = Math.round(255 * Math.pow(v, 0.6));
+    vctx.fillStyle = `rgb(${c},${Math.round(c * 0.55)},${255 - c})`; vctx.fillRect(x0 + gx * iw / GW, y0 + gy * ih / GH, iw / GW + 0.5, ih / GH + 0.5); }
+  vctx.strokeStyle = '#fff'; vctx.lineWidth = 1; vctx.strokeRect(x0, y0, iw, ih);
+  for (const d of D.dets) { vctx.strokeStyle = '#bf5af2'; vctx.lineWidth = 2; vctx.strokeRect(x0 + d.x * iw, y0 + d.y * ih, d.w * iw, d.h * ih); }
+  vctx.fillStyle = 'rgba(0,0,0,.6)'; vctx.fillRect(x0, y0 + ih, iw, 18); vctx.fillStyle = '#fff'; vctx.font = '600 12px sans-serif'; vctx.textAlign = 'left'; vctx.fillText('profondità', x0 + 4, y0 + ih + 13);
 }
 
 // ------------------------------------------------------------------ real detector (COCO-SSD, weights shipped with the page)
@@ -771,6 +913,7 @@ async function detectFrame(now) {
 // ------------------------------------------------------------------ pipeline + render
 function pipeline(dets, tCapture) {
   const now = performance.now();
+  dets = dets.concat(depthDets(now));
   associate(dets, now); ageTracks(now);
   for (const t of S.tracks) t.curLvl = assess(t, now);
   feedback(now);
@@ -800,6 +943,7 @@ function render(src) {
     const tw = vctx.measureText(label).width + 10; const ly = Math.max(18, b.y * H - 4);
     vctx.fillStyle = col; vctx.fillRect(b.x * W - 1, ly - 17, tw, 20); vctx.fillStyle = '#fff'; vctx.fillText(label, b.x * W + 4, ly - 2);
   }
+  drawDepthInset();
 }
 function updateMetrics() {
   $('mFps').textContent = currentFps().toFixed(1);
@@ -809,6 +953,7 @@ function updateMetrics() {
   const tot = S.recov + S.losses; $('mRec').textContent = tot ? `${S.recov}/${tot} (${Math.round(100 * S.recov / tot)}%)` : '–';
   $('mRecT').textContent = S.recovTimes.length ? (S.recovTimes.reduce((a, b) => a + b, 0) / S.recovTimes.length).toFixed(1) + ' s' : '–';
   $('mSw').textContent = S.source === 'sim' ? S.switches : 'n/d';
+  $('mDepth').textContent = depthStatus();
   $('mTop').textContent = S.top ? `L${S.topLevel} ${nameOf(S.top.cls)} ${dirWord(S.top.cx)} ${fmtM(S.top.dist)}${S.top.state === 'maybe' ? ' (probabile)' : ''}` : 'nessuno';
 }
 
@@ -817,12 +962,12 @@ let lastHealth = 0, lastMetrics = 0;
 function loop() {
   const now = performance.now();
   if (S.source === 'sim') {
-    const t = (now - S.simT0) / 1000; const objs = simObjects(t); drawSim(objs);
+    const t = (now - S.simT0) / 1000; const objs = simObjects(t); drawSim(objs); if (P.depth) simDepth(objs, now);
     const tc = performance.now(); pipeline(simDetect(objs), tc);
     if (now - lastHealth > 250) { lastHealth = now; checkHealth(scene, now); }
     if (!$('jury').hidden) render(scene);
   } else if (vid.readyState >= 2) {
-    detectFrame(now);
+    detectFrame(now); if (P.depth && S.guiding) { ensureDepth(); depthTick(now); }
     if (now - lastHealth > 250) { lastHealth = now; if (S.cover) { pctx.fillStyle = '#000'; pctx.fillRect(0, 0, 80, 60); S.health.luma = 0; checkHealth(probe, now); } else checkHealth(vid, now); }
     if (!$('jury').hidden) { if (view.width !== 640 || Math.abs(view.height - 640 * vid.videoHeight / vid.videoWidth) > 2) { view.width = 640; view.height = Math.round(640 * vid.videoHeight / vid.videoWidth) || 480; }
       if (S.cover) { vctx.fillStyle = '#000'; vctx.fillRect(0, 0, view.width, view.height); render(probe); } else render(vid); }
@@ -1016,6 +1161,7 @@ function syncPrefs() {
   $('prefPrudL').textContent = P.prud > 1 ? 'Avvisi prudenti' : 'Avvisi normali';
   $('prefVibL').textContent = P.vib ? 'Vibrazione sì' : 'Vibrazione no'; $('prefVib').setAttribute('aria-pressed', String(P.vib));
   if ($('prefGuide')) $('prefGuide').setAttribute('aria-pressed', String(!!P.guide));
+  if ($('prefDepth')) $('prefDepth').setAttribute('aria-pressed', String(!!P.depth));
 }
 function sayPref(t) { audioInit(); S.speakAnyway = true; say(t); S.speakAnyway = false; vibrate(20); }
 $('toPrefs').addEventListener('click', () => { $('mainPads').hidden = true; $('prefs').hidden = false; $('toPrefs').setAttribute('aria-expanded', 'true'); syncPrefs(); $('prefRate').focus(); sayPref('Impostazioni. Velocità voce, prudenza, vibrazione, e il pulsante Fatto.'); });
@@ -1058,6 +1204,7 @@ function setGuide(on, announce) {
   if (announce) speakNow(on ? 'Guida vocale ai tasti attiva. Tocca una volta un tasto per sentire cosa fa, due volte per attivarlo.' : 'Guida vocale ai tasti spenta.');
 }
 $('prefGuide').addEventListener('click', () => setGuide(!P.guide, true));
+$('prefDepth').addEventListener('click', () => { P.depth = !P.depth; savePrefs(); syncPrefs(); if (!P.depth) { D.dets = []; } sayPref(P.depth ? 'Ostacoli senza nome attivi.' : 'Ostacoli senza nome spenti. Riconosco solo gli oggetti con un nome.'); });
 function askScreenReader() {
   $('askSR').hidden = false; $('askYes').focus();
   // a blind user without a screen reader hears the question at the first touch anywhere on the sheet

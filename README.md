@@ -28,6 +28,16 @@ Senza internet l'app riapre l'ultima versione salvata.
 | `sw.js` | Service worker: carica sempre la versione più recente, cache solo per l'offline |
 | `manifest.webmanifest`, `icons/` | Installazione come app |
 
+## Come riconosce i pericoli
+
+- **Oggetti con un nome** (persone, bici, auto, panchine…): rilevatore COCO-SSD sul telefono, tracciamento con gestione delle occlusioni, stima di distanza e tempo all'impatto.
+- **Ostacoli senza nome** (pali, gradini, cantieri): modello di profondità Depth Anything V2 Small in un worker, qualche immagine al secondo. Segnala ciò che sporge dal pavimento, vicino e davanti, anche senza sapere cos'è. Si scarica da Hugging Face la prima volta che avvii la guida; si spegne da Impostazioni.
+
+## Accessibilità
+
+- Pensata per chi non vede per niente e per chi vede poco: ordine fisso dei comandi, barra in basso sempre uguale, contrasto alto, ogni stato detto a voce.
+- **Guida vocale ai tasti** per chi non usa VoiceOver o TalkBack: un tocco ascolti, due tocchi attivi. Al primo avvio l'app chiede se usi uno screen reader.
+
 ## Modalità giuria
 
 Il tab "Giuria" mostra la scena con i box, lo stato di ogni oggetto (visto, probabile, perso), le metriche (FPS, latenza, oggetti ritrovati dopo l'occlusione, cambi di ID), una simulazione con buio e camera coperta, e la tabella "Perché è fatto così" che collega ogni scelta agli studi.
