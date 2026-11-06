@@ -268,7 +268,7 @@ table.lv td, table.lv th { text-align: left; padding: 6px 4px; border-bottom: 1p
     <p class="eyebrow grouplabel">Intelligenza artificiale</p>
     <div class="group">
       <div class="keyrow">
-        <label for="aiKey"><b>Chiave AI (Gemini)</b><span id="aiKeyL">Serve per Leggi, Descrivi e Chiedi. Resta solo su questo telefono.</span></label>
+        <label for="aiKey"><b>Chiave AI (Gemini)</b><span id="aiKeyL">Facoltativa: l'app usa già il server Eco. Mettila solo per usare una chiave tua, resta su questo telefono.</span></label>
         <input id="aiKey" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Incolla qui la chiave">
         <div class="keybtns"><button class="primarybtn" id="aiKeySave" type="button">Salva chiave</button><button class="primarybtn alt" id="aiKeyDel" type="button">Cancella</button></div>
       </div>
@@ -478,7 +478,7 @@ const S = {
   simT0: performance.now(), detBusy: false, lastDetT: 0,
 };
 const $ = id => document.getElementById(id);
-const APP_VERSION = '0.9.0';
+const APP_VERSION = '0.9.1';
 const IS_APP = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true || /github\.io$/.test(location.hostname);
 // In the real app the demo scene never runs by itself: its pedestrian and bike would trigger real alerts. Only the jury console can start it.
 if (IS_APP) S.source = 'idle';
@@ -1150,7 +1150,9 @@ $('gWhat').addEventListener('click', () => { audioInit(); describeScene(); });
 // The Gemini key is typed in Settings and stored only in this phone's localStorage: never in the code or on GitHub.
 const GEMINI_MODEL = 'gemini-flash-latest';
 // Preferred route: the Supabase function 'eco-ai' holds the key for every phone. Empty until the project exists.
-const ECO_AI_URL = '', ECO_AI_PUB = '';
+const ECO_AI_URL = 'https://augakakteigortclchgc.supabase.co/functions/v1/eco-ai';
+// public anon key of the Supabase project (safe in the page: it only lets the app call the function)
+const ECO_AI_PUB = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1Z2FrYWt0ZWlnb3J0Y2xjaGdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM5ODM1MzIsImV4cCI6MjEwOTU1OTUzMn0.cVYuVdZt9P4dXYe8SH8tJ3Op2Uhym6_0dCT3flcwNOY';
 const aiKey = () => { try { return localStorage.getItem('ecoAiKey') || ''; } catch (e) { return ''; } };
 const AI_BASE = 'Rispondi in italiano a una persona cieca che sta usando la fotocamera del telefono. Frasi brevi e semplici, adatte alla sintesi vocale: niente elenchi puntati, niente markdown, niente emoji. Di\' solo quello che vedi davvero. Se non sei sicuro dillo con parole come "forse" o "sembra". Se l\'immagine è buia, mossa o tagliata, dillo e suggerisci come inquadrare meglio (più vicino, più luce, più a sinistra).';
 const AI_PROMPTS = {
