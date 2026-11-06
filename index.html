@@ -417,8 +417,10 @@ const S = {
   simT0: performance.now(), detBusy: false, lastDetT: 0,
 };
 const $ = id => document.getElementById(id);
-const APP_VERSION = '0.6.0';
+const APP_VERSION = '0.6.2';
 const IS_APP = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true || /github\.io$/.test(location.hostname);
+// In the real app the demo scene never runs by itself: its pedestrian and bike would trigger real alerts. Only the jury console can start it.
+if (IS_APP) S.source = 'idle';
 const P = { rate: 1, prud: 1, vib: true, guide: null, depth: true, look: 'giallo' };
 try { Object.assign(P, JSON.parse(localStorage.getItem('ecoFidatoPrefs') || '{}')); } catch (e) {}
 const savePrefs = () => { try { localStorage.setItem('ecoFidatoPrefs', JSON.stringify(P)); } catch (e) {} };
@@ -580,8 +582,29 @@ function beep({ freq = 660, dur = 0.07, pan = 0, muffled = false, gain = 0.35, t
   g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(gain, t0 + 0.008); g.gain.exponentialRampToValueAtTime(0.0008, t0 + dur);
   o.start(t0); o.stop(t0 + dur + 0.02);
 }
-function vibrate(p) { try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) {} }
-const VIB_OK = (() => { try { return typeof navigator.vibrate === 'function'; } catch (e) { return false; } })();
+// iPhone Safari has no navigator.vibrate. From iOS 18, toggling an <input type=checkbox switch> gives a haptic tick,
+// so on iPhone we play each 'on' segment of a pattern as a few ticks (same trick as the ios-haptics library).
+const VIB_WEB = (() => { try { return typeof navigator.vibrate === 'function'; } catch (e) { return false; } })();
+const VIB_IOS = !VIB_WEB && (() => { try { return 'switch' in HTMLInputElement.prototype && (/iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)); } catch (e) { return false; } })();
+const VIB_OK = VIB_WEB || VIB_IOS;
+function iosTick() {
+  try {
+    const l = document.createElement('label'); l.setAttribute('aria-hidden', 'true'); l.style.display = 'none';
+    const i = document.createElement('input'); i.type = 'checkbox'; i.setAttribute('switch', ''); l.appendChild(i);
+    document.head.appendChild(l); l.click(); l.remove();
+  } catch (e) {}
+}
+function vibrate(p) {
+  try {
+    if (VIB_WEB) { navigator.vibrate(p); return; }
+    if (!VIB_IOS) return;
+    const seq = Array.isArray(p) ? p : [p]; let t = 0;
+    seq.forEach((ms, k) => {
+      if (k % 2 === 0) { const n = Math.max(1, Math.round(ms / 70)); for (let j = 0; j < n; j++) setTimeout(iosTick, t + j * 70); }
+      t += ms;
+    });
+  } catch (e) {}
+}
 let itVoice = null;
 function pickVoice() { try { const vs = speechSynthesis.getVoices(); itVoice = vs.find(v => /^it/i.test(v.lang)) || null; } catch (e) {} }
 try { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; } catch (e) {}
@@ -666,7 +689,18 @@ function alertPhrase(t, lvl) {
 }
 function setQuiet() { $('saying').textContent = 'In silenzio: nessun pericolo.'; if (S.guiding) $('uStatus').textContent = 'Guida attiva. Nessun pericolo.'; }
 
-function describeScene() {
+// In the app, 'Cosa c'è?' must look through the real camera even when the guide is off.
+async function describeScene() {
+  if (IS_APP && S.source !== 'camera') {
+    if (S.source === 'sim') { S.source = 'idle'; resetTracker(); }
+    S.speakAnyway = true; say('Guardo.', true); S.speakAnyway = false;
+    $('srcCam').click();
+    const t0 = performance.now();
+    while (performance.now() - t0 < 12000 && !(S.source === 'camera' && S.model && vid.readyState >= 2)) await new Promise(r => setTimeout(r, 200));
+    if (S.source !== 'camera') return; // the camera handler already said why
+    if (!S.model) { S.speakAnyway = true; say('Il riconoscimento non è ancora pronto. Riprova tra qualche secondo.', true); S.speakAnyway = false; return; }
+    await new Promise(r => setTimeout(r, 1500)); // a few frames so the tracker confirms what it sees
+  }
   const now = performance.now();
   const items = S.tracks.filter(t => t.state === 'seen' || t.state === 'maybe').sort((a, b) => a.dist - b.dist).slice(0, 5);
   let txt;
@@ -787,10 +821,10 @@ function depthObstacles(g, now) {
   const k = floorDistAt(0.94) * r; // metric scale from the floor just ahead of the feet
   const flag = new Uint8Array(GW * GH), dist = new Float32Array(GW * GH);
   for (let gy = 0; gy < GH; gy++) { const y = (gy + 0.5) / GH; if (y > 0.86) continue;
-    for (let gx = 0; gx < GW; gx++) { const x = (gx + 0.5) / GW; if (x < 0.12 || x > 0.88) continue;
+    for (let gx = 0; gx < GW; gx++) { const x = (gx + 0.5) / GW; if (x < 0.18 || x > 0.82) continue; // walking corridor only, not walls at the sides
       const i = gy * GW + gx, v = g[i]; if (!(v > 1e-6)) continue;
       const dm = k / v; dist[i] = dm;
-      if (dm < 3.6 && dm < floorDistAt(y) * 0.7) flag[i] = 1; } }
+      if (dm < 3.2 && dm < floorDistAt(y) * 0.7) flag[i] = 1; } }
   // cells covered by objects the detector already names are not 'unnamed obstacles'
   const named = S.tracks.filter(t => t.cls !== 'obstacle' && t.state !== 'tentative').map(boxOf);
   for (let i = 0; i < GW * GH; i++) { if (!flag[i]) continue; const x = (i % GW + 0.5) / GW, y = (((i / GW) | 0) + 0.5) / GH;
@@ -801,7 +835,7 @@ function depthObstacles(g, now) {
     const stack = [i], cells = []; seen[i] = 1;
     while (stack.length) { const c = stack.pop(); cells.push(c); const cx = c % GW, cy = (c / GW) | 0;
       for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = cx + dx, ny = cy + dy; if (nx < 0 || ny < 0 || nx >= GW || ny >= GH) continue; const n = ny * GW + nx; if (flag[n] && !seen[n]) { seen[n] = 1; stack.push(n); } } }
-    if (cells.length < 5) continue;
+    if (cells.length < 6) continue;
     let x0 = GW, x1 = 0, y0 = GH, y1 = 0; const ds = [];
     for (const c of cells) { const cx = c % GW, cy = (c / GW) | 0; x0 = Math.min(x0, cx); x1 = Math.max(x1, cx); y0 = Math.min(y0, cy); y1 = Math.max(y1, cy); ds.push(dist[c]); }
     ds.sort((a, b) => a - b);
@@ -918,7 +952,7 @@ async function detectFrame(now) {
   try {
     const W = vid.videoWidth, H = vid.videoHeight;
     let preds = [];
-    if (!S.cover) preds = await S.model.detect(vid, 20, 0.25);
+    if (!S.cover) preds = await S.model.detect(vid, 20, 0.35);
     S.inferMs = performance.now() - t0;
     const dets = preds.map(p => ({ cls: p.class, score: p.score, x: p.bbox[0] / W, y: p.bbox[1] / H, w: p.bbox[2] / W, h: p.bbox[3] / H }));
     pipeline(dets, t0);
@@ -1009,7 +1043,7 @@ function setGuiding(on) {
   $('goLabel').textContent = on ? 'Ferma guida' : 'Avvia guida';
   $('jGo').textContent = on ? 'Ferma guida' : 'Avvia guida';
   if (on) {
-    if (IS_APP && S.source !== 'camera') $('srcCam').click();
+    if (IS_APP && S.source !== 'camera') { if (S.source === 'sim') { S.source = 'idle'; resetTracker(); } $('srcCam').click(); }
     vibrate([60, 60, 60]); beep({ freq: 660, dur: 0.08 }); setTimeout(() => beep({ freq: 880, dur: 0.1 }), 110);
     try { speechSynthesis.cancel(); } catch (e) {}
     let first = false; try { first = !localStorage.getItem('ecoFidatoIntro'); localStorage.setItem('ecoFidatoIntro', '1'); } catch (e) { first = !S.introDone; } S.introDone = true;
@@ -1251,7 +1285,8 @@ $('toPrefs').addEventListener('click', () => setTab(true));
 $('prefClose').addEventListener('click', () => setTab(false));
 $('tabHome').addEventListener('click', () => { if (!$('prefs').hidden) $('prefClose').click(); else $('padGo').focus(); });
 
-if (!VIB_OK) logMsg('Vibrazione non disponibile su questo browser (iPhone non la consente): restano suoni e voce.', 2);
+if (!VIB_OK) logMsg('Vibrazione non disponibile su questo browser: restano suoni e voce.', 2);
+else if (VIB_IOS) logMsg('iPhone: vibrazione tramite il trucco dell\'interruttore (iOS 18 o successivo).', 1);
 requestAnimationFrame(loop);
 })();
 </script>
