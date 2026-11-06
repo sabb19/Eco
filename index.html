@@ -77,6 +77,9 @@ button, select, input { font: inherit; }
 .chip i { width: 9px; height: 9px; border-radius: 50%; background: var(--a-g); }
 .chip.mid i { background: var(--a-o); } .chip.bad i { background: var(--a-r); }
 #user .status { margin: 0; font-size: clamp(21px, 5.8vw, 26px); font-weight: 700; line-height: 1.25; min-height: 2.5em; color: var(--a-fg); }
+.camview { position: relative; border-radius: 22px; overflow: hidden; background: #000; border: 2px solid var(--a-line); }
+.camview canvas { display: block; width: 100%; height: auto; }
+.camtag { position: absolute; left: 10px; top: 10px; background: #000c; color: #fff; font-size: 14px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
 .hero { display: flex; flex-direction: column; align-items: center; padding: 6px 0 0; }
 .gobtn { position: relative; width: min(54vw, 210px); aspect-ratio: 1; border-radius: 50%; border: 0; cursor: pointer;
   background: var(--a-card); color: var(--a-y); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
@@ -205,6 +208,7 @@ table.lv td, table.lv th { text-align: left; padding: 6px 4px; border-bottom: 1p
       <div class="cardhead"><span class="eyebrow">Adesso</span><span class="chip" id="uHealth"><i aria-hidden="true"></i><span id="uHealthT">Vista buona</span></span></div>
       <p class="status" id="uStatus" aria-live="polite">Pronto. Tocca "Avvia guida" per iniziare.</p>
     </section>
+    <div class="camview" id="uCamWrap" hidden aria-hidden="true"><canvas id="uCam" width="480" height="360"></canvas><span class="camtag">Fotocamera</span></div>
 
     <div class="hero">
       <button class="gobtn" id="padGo" type="button" aria-pressed="false" aria-describedby="goDesc">
@@ -234,6 +238,7 @@ table.lv td, table.lv th { text-align: left; padding: 6px 4px; border-bottom: 1p
     <p class="eyebrow grouplabel">Accessibilità</p>
     <div class="group">
       <button class="row" id="prefLook" type="button"><span class="ti" style="background:#ffd60a" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v18" /><path d="M12 3a9 9 0 0 1 0 18z" fill="#000"/></svg></span><span class="tt"><b>Colori</b><span>Per chi vede un po'</span></span><span class="val" id="prefLookL">Giallo su nero</span></button>
+      <button class="row" id="prefCam" type="button" aria-pressed="true"><span class="ti" style="background:#30d158" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h4l2-3h6l2 3h4v11H3z"/><circle cx="12" cy="13" r="3.5"/></svg></span><span class="tt"><b>Mostra fotocamera</b><span>Immagine e riquadri durante la guida</span></span><span class="switch" aria-hidden="true"></span></button>
       <button class="row" id="prefDepth" type="button" aria-pressed="true"><span class="ti" style="background:#bf5af2" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 8l7-5 7 5M5 16l7 5 7-5"/></svg></span><span class="tt"><b>Ostacoli senza nome</b><span>Pali, gradini, cantieri. Scarica qualche decina di MB la prima volta</span></span><span class="switch" aria-hidden="true"></span></button>
       <button class="row" id="prefGuide" type="button" aria-pressed="false"><span class="ti" style="background:#64d2ff" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11V5a2 2 0 0 1 4 0v6"/><path d="M13 9a2 2 0 0 1 4 0v4a6 6 0 0 1-6 6h-1a5 5 0 0 1-4-2l-2-3a1.6 1.6 0 0 1 2.6-1.9L9 14"/></svg></span><span class="tt"><b>Guida vocale ai tasti</b><span id="prefGuideL">Un tocco ascolti, due tocchi attivi</span></span><span class="switch" aria-hidden="true"></span></button>
     </div>
@@ -417,11 +422,11 @@ const S = {
   simT0: performance.now(), detBusy: false, lastDetT: 0,
 };
 const $ = id => document.getElementById(id);
-const APP_VERSION = '0.6.2';
+const APP_VERSION = '0.6.3';
 const IS_APP = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true || /github\.io$/.test(location.hostname);
 // In the real app the demo scene never runs by itself: its pedestrian and bike would trigger real alerts. Only the jury console can start it.
 if (IS_APP) S.source = 'idle';
-const P = { rate: 1, prud: 1, vib: true, guide: null, depth: true, look: 'giallo' };
+const P = { rate: 1, prud: 1, vib: true, guide: null, depth: true, look: 'giallo', cam: true };
 try { Object.assign(P, JSON.parse(localStorage.getItem('ecoFidatoPrefs') || '{}')); } catch (e) {}
 const savePrefs = () => { try { localStorage.setItem('ecoFidatoPrefs', JSON.stringify(P)); } catch (e) {} };
 const view = $('view'), vctx = view.getContext('2d');
@@ -1007,6 +1012,26 @@ function updateMetrics() {
   $('mTop').textContent = S.top ? `L${S.topLevel} ${nameOf(S.top.cls)} ${dirWord(S.top.cx)} ${fmtM(S.top.dist)}${S.top.state === 'maybe' ? ' (probabile)' : ''}` : 'nessuno';
 }
 
+// ------------------------------------------------------------------ live camera on the home screen (for low vision and companions)
+// Big boxes and Italian names; the danger the voice is talking about is drawn thick and red.
+const ucam = $('uCam'), uctx = ucam.getContext('2d');
+function drawUserCam() {
+  const vw = vid.videoWidth || 640, vh = vid.videoHeight || 480;
+  const W = 480, H = Math.round(480 * vh / vw) || 360; if (ucam.height !== H) ucam.height = H;
+  if (S.cover) { uctx.fillStyle = '#000'; uctx.fillRect(0, 0, W, H); } else uctx.drawImage(vid, 0, 0, W, H);
+  uctx.font = '700 18px "Atkinson Hyperlegible", sans-serif'; uctx.textAlign = 'left';
+  for (const t of S.tracks) {
+    if (t.state === 'tentative') continue;
+    const b = boxOf(t), top = S.top && S.top.id === t.id && t.curLvl <= 2;
+    const col = top && t.curLvl === 1 ? '#ff453a' : top ? '#ffd60a' : t.state === 'maybe' ? '#ff9f0a' : '#30d158';
+    uctx.strokeStyle = col; uctx.lineWidth = top ? 6 : 3; uctx.setLineDash(t.state === 'maybe' ? [10, 7] : []);
+    uctx.strokeRect(b.x * W, b.y * H, b.w * W, b.h * H); uctx.setLineDash([]);
+    const label = (t.state === 'maybe' ? 'probabile ' : '') + nameOf(t.cls) + ' ' + fmtM(t.dist);
+    const tw = uctx.measureText(label).width + 12, ly = Math.max(24, b.y * H);
+    uctx.fillStyle = col; uctx.fillRect(b.x * W, ly - 24, tw, 26); uctx.fillStyle = '#000'; uctx.fillText(label, b.x * W + 6, ly - 5);
+  }
+}
+
 // ------------------------------------------------------------------ main loop
 let lastHealth = 0, lastMetrics = 0;
 function loop() {
@@ -1018,6 +1043,9 @@ function loop() {
     if (!$('jury').hidden) render(scene);
   } else if (vid.readyState >= 2) {
     detectFrame(now); if (P.depth && S.guiding) { ensureDepth(); depthTick(now); }
+    const showCam = P.cam && S.source === 'camera' && S.guiding && !$('user').hidden;
+    if ($('uCamWrap').hidden === showCam) $('uCamWrap').hidden = !showCam;
+    if (showCam) drawUserCam();
     if (now - lastHealth > 250) { lastHealth = now; if (S.cover) { pctx.fillStyle = '#000'; pctx.fillRect(0, 0, 80, 60); S.health.luma = 0; checkHealth(probe, now); } else checkHealth(vid, now); }
     if (!$('jury').hidden) { if (view.width !== 640 || Math.abs(view.height - 640 * vid.videoHeight / vid.videoWidth) > 2) { view.width = 640; view.height = Math.round(640 * vid.videoHeight / vid.videoWidth) || 480; }
       if (S.cover) { vctx.fillStyle = '#000'; vctx.fillRect(0, 0, view.width, view.height); render(probe); } else render(vid); }
@@ -1052,6 +1080,7 @@ function setGuiding(on) {
     S.speakAnyway = true; say(msg); S.speakAnyway = false; S.lastBeat = performance.now();
     try { navigator.wakeLock && navigator.wakeLock.request('screen').catch(() => {}); } catch (e) {}
   } else {
+    $('uCamWrap').hidden = true;
     vibrate(120); beep({ freq: 880, dur: 0.08 }); setTimeout(() => beep({ freq: 560, dur: 0.12 }), 110);
     S.speakAnyway = true; say('Guida in pausa.'); S.speakAnyway = false;
   }
@@ -1222,6 +1251,7 @@ function syncPrefs() {
   $('prefVibL').textContent = P.vib ? 'Vibrazione sì' : 'Vibrazione no'; $('prefVib').setAttribute('aria-pressed', String(P.vib));
   if ($('prefGuide')) $('prefGuide').setAttribute('aria-pressed', String(!!P.guide));
   if ($('prefDepth')) $('prefDepth').setAttribute('aria-pressed', String(!!P.depth));
+  if ($('prefCam')) $('prefCam').setAttribute('aria-pressed', String(!!P.cam));
   if ($('prefLookL')) $('prefLookL').textContent = (LOOKS.find(l => l[0] === P.look) || LOOKS[0])[1];
   applyLook();
 }
@@ -1267,6 +1297,7 @@ function setGuide(on, announce) {
   if (announce) speakNow(on ? 'Guida vocale ai tasti attiva. Tocca una volta un tasto per sentire cosa fa, due volte per attivarlo.' : 'Guida vocale ai tasti spenta.');
 }
 $('prefGuide').addEventListener('click', () => setGuide(!P.guide, true));
+$('prefCam').addEventListener('click', () => { P.cam = !P.cam; savePrefs(); syncPrefs(); sayPref(P.cam ? 'Fotocamera visibile durante la guida.' : 'Fotocamera nascosta.'); });
 $('prefDepth').addEventListener('click', () => { P.depth = !P.depth; savePrefs(); syncPrefs(); if (!P.depth) { D.dets = []; } sayPref(P.depth ? 'Ostacoli senza nome attivi.' : 'Ostacoli senza nome spenti. Riconosco solo gli oggetti con un nome.'); });
 function askScreenReader() {
   $('askSR').hidden = false; $('askYes').focus();
