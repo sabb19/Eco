@@ -280,7 +280,7 @@ table.lv td, table.lv th { text-align: left; padding: 6px 4px; border-bottom: 1p
       <div class="controls">
         <label class="toggle"><input type="checkbox" id="optDark"> Simula buio</label>
         <label class="toggle"><input type="checkbox" id="optCover"> Copri la camera</label>
-        <label class="toggle"><input type="checkbox" id="optBeat" checked> Battito di presenza</label>
+        <label class="toggle"><input type="checkbox" id="optBeat"> Battito di presenza</label>
         <input type="file" id="fileIn" accept="video/*" class="sr" aria-label="Carica un video">
       </div>
       <p class="note" id="srcNote">Simulazione: un pedone passa dietro un'edicola, poi una bici arriva verso l'utente.</p>
@@ -400,14 +400,14 @@ const S = {
   source: 'sim', running: false, guiding: false, model: null, modelLoading: false,
   tracks: [], lost: [], nextId: 1,
   health: { level: 'good', luma: 0.5, lap: 1, sat: 0 }, healthSpoken: 'good', healthSpokenAt: 0,
-  dark: false, cover: false, beat: true,
+  dark: false, cover: false, beat: false,
   fpsT: [], inferMs: 0, pipeMs: 0,
   recov: 0, losses: 0, recovTimes: [], gtMap: new Map(), switches: 0,
   top: null, topLevel: 0, spoken: new Map(), lastBeat: 0, lastSayAt: 0,
   simT0: performance.now(), detBusy: false, lastDetT: 0,
 };
 const $ = id => document.getElementById(id);
-const APP_VERSION = '0.5.2';
+const APP_VERSION = '0.5.3';
 const IS_APP = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true || /github\.io$/.test(location.hostname);
 const P = { rate: 1, prud: 1, vib: true, guide: null, depth: true };
 try { Object.assign(P, JSON.parse(localStorage.getItem('ecoFidatoPrefs') || '{}')); } catch (e) {}
@@ -543,6 +543,7 @@ function assess(t, now) {
   if ((MOVING.has(t.cls) || LIVING.has(t.cls)) && approaching && d < 7 * prud && Math.abs(t.cx - 0.5) < 0.32) lvl = Math.min(lvl, 2);
   if ((approaching && ttc < 2.5 * prud && d < 5 * prud && Math.abs(t.cx - 0.5) < 0.22) || (inPath && d < 1.3 * prud) || (high && d < 1.6 * prud)) lvl = 1;
   if (!inPath && !approaching && lvl === 2) lvl = 3;
+  if (t.cls === 'obstacle' && lvl === 1 && d > 1.5) lvl = 2; // depth distance is approximate: 'Stop' only when really close
   // hysteresis: keep a level a bit longer once reached
   if (t.lvl && t.lvl < lvl && now - (t.lvlAt || 0) < 700) lvl = t.lvl;
   if (t.lvl !== lvl) { t.lvl = lvl; t.lvlAt = now; }
@@ -592,7 +593,9 @@ let nextBeepAt = 0;
 function feedback(now) {
   // choose the single most dangerous object
   let top = null, lvl = 9;
-  for (const t of S.tracks) { if (t.state === 'tentative' || (t.state === 'maybe' && t.edge)) continue; const l = t.curLvl;
+  for (const t of S.tracks) { if (t.state === 'tentative' || (t.state === 'maybe' && t.edge)) continue;
+    if (t.cls === 'obstacle' && (t.hits < 4 || t.state === 'maybe')) continue; // depth is noisier: only stable, currently seen obstacles speak
+    const l = t.curLvl;
     if (l > 2) continue; if (l < lvl || (l === lvl && t.risk > (top ? top.risk : -1))) { top = t; lvl = l; } }
   // probable objects only speak if trust still meaningful, unless critical
   if (top && top.state === 'maybe' && lvl === 2 && top.trust < 0.15) { top = null; lvl = 9; }
@@ -620,6 +623,7 @@ function feedback(now) {
       say(phrase, lvl === 1);
     }
     if (lvl === 1 && P.vib) vibrate([220, 70, 220, 70, 220]);
+    else if (lvl === 2 && P.vib && !maybe) vibrate(60);
   }
   // rhythm: faster when closer (parking-sensor style)
   if (S.guiding && now >= nextBeepAt) {
@@ -627,7 +631,6 @@ function feedback(now) {
     nextBeepAt = now + period;
     const freq = MOVING.has(top.cls) ? 900 : LIVING.has(top.cls) ? 700 : 480;
     beep({ freq, pan: (top.cx - 0.5) * 1.8, muffled: maybe, gain: lvl === 1 ? 0.45 : 0.3, type: maybe ? 'sine' : 'triangle' });
-    if (lvl === 2 && P.vib) vibrate(maybe ? 25 : 55);
   }
 }
 // action-oriented wording (users prefer what to do over scene description)
