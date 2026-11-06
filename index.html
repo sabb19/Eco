@@ -55,7 +55,7 @@ button, select, input { font: inherit; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* ---------- user mode: native-style mobile app, dark high contrast ---------- */
-#user { height: 100%; --a-bg:#0a0a0c; --a-card:#17181c; --a-card2:#1f2026; --a-line:#2c2d34; --a-fg:#f5f5f7; --a-mut:#b4b4bd; --a-y:#ffd60a; --a-g:#30d158; --a-o:#ff9f0a; --a-r:#ff453a;
+#user { height: 100%; --a-bg:#0a0a0c; --a-card:#17181c; --a-card2:#1f2026; --a-line:#2c2d34; --a-fg:#f5f5f7; --a-mut:#b4b4bd; --a-y:#ffd60a; --a-g:#30d158; --a-o:#ff9f0a; --a-r:#ff453a; --a-on:#000; --a-l1:#2a1214; --a-bar:#111215f2; --a-off:#5a5b63; --a-tab:#b4b4bd;
   min-height: 100%; background: var(--a-bg); color: var(--a-fg); display: flex; justify-content: center; }
 .app { position: relative; width: 100%; max-width: 440px; height: 100vh; height: 100dvh; display: flex; flex-direction: column; background: var(--a-bg); }
 @media (min-width: 600px) {
@@ -63,13 +63,13 @@ button, select, input { font: inherit; }
   .app { height: min(880px, calc(100dvh - 56px)); border-radius: 44px; border: 10px solid #000; outline: 1px solid #3a3b42; box-shadow: 0 30px 80px #000a; overflow: hidden; }
 }
 .appbar { display: flex; align-items: center; gap: 12px; padding: max(14px, env(safe-area-inset-top, 0px)) max(18px, env(safe-area-inset-right, 0px)) 6px max(18px, env(safe-area-inset-left, 0px)); }
-.appicon { width: 40px; height: 40px; border-radius: 11px; background: var(--a-y); display: grid; place-items: center; flex: none; }
+.appicon { width: 40px; height: 40px; border-radius: 11px; background: var(--a-y); display: grid; place-items: center; flex: none; color: var(--a-on); }
 .appicon svg { width: 26px; height: 26px; }
 .apptitle { font-weight: 700; font-size: 22px; letter-spacing: -.01em; }
 .screen { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; padding: 8px max(18px, env(safe-area-inset-right, 0px)) 18px max(18px, env(safe-area-inset-left, 0px)); }
 .screen > * { flex-shrink: 0; }
 .card { background: var(--a-card); border-radius: 22px; padding: 16px 18px; border: 2px solid transparent; transition: border-color .15s, background .15s; }
-.card.l1 { border-color: var(--a-r); background: #2a1214; }
+.card.l1 { border-color: var(--a-r); background: var(--a-l1); }
 .card.l2 { border-color: var(--a-y); }
 .cardhead { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 6px; }
 .eyebrow { font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--a-mut); }
@@ -84,7 +84,7 @@ button, select, input { font: inherit; }
 .gobtn svg { width: 64px; height: 64px; }
 .gobtn b { font-size: clamp(24px, 6.6vw, 30px); line-height: 1.1; }
 .gobtn .ic-stop { display: none; }
-.gobtn.on { background: var(--a-y); color: #000; box-shadow: 0 0 0 0 #ffd60a88, 0 12px 40px #0008; animation: ring 2.2s ease-out infinite; }
+.gobtn.on { background: var(--a-y); color: var(--a-on); box-shadow: 0 0 0 0 #ffd60a88, 0 12px 40px #0008; animation: ring 2.2s ease-out infinite; }
 .gobtn.on .ic-play { display: none; } .gobtn.on .ic-stop { display: block; }
 @keyframes ring { 0% { box-shadow: 0 0 0 0 #ffd60a77, 0 12px 40px #0008; } 100% { box-shadow: 0 0 0 26px #ffd60a00, 0 12px 40px #0008; } }
 .gobtn:active { transform: scale(.97); }
@@ -97,8 +97,8 @@ button, select, input { font: inherit; }
 .tile .tt { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 .tile b { font-size: 21px; line-height: 1.2; }
 .tile span.d { font-size: 16px; color: var(--a-mut); }
-.tile .chev { color: #6b6c75; flex: none; width: 20px; height: 20px; }
-.tile.on { background: var(--a-y); color: #000; } .tile.on span.d { color: #222; } .tile.on .ti { background: #0000001f; color: #000; } .tile.on .chev { color: #000; }
+.tile .chev { color: var(--a-mut); flex: none; width: 20px; height: 20px; }
+.tile.on { background: var(--a-y); color: var(--a-on); } .tile.on span.d, .tile.on .ti, .tile.on .chev { color: var(--a-on); } .tile.on .ti { background: #8881; }
 .tile:active { transform: scale(.985); background: var(--a-card2); }
 .foot { margin: 2px 4px 0; color: var(--a-mut); font-size: 15px; text-align: center; }
 .navtitle { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
@@ -112,7 +112,7 @@ button, select, input { font: inherit; }
 .row .tt { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 .row .tt b { font-size: 19px; } .row .tt span { font-size: 15px; color: var(--a-mut); }
 .row .val { color: var(--a-y); font-weight: 700; font-size: 17px; text-align: right; max-width: 9em; }
-.switch { width: 56px; height: 34px; border-radius: 999px; background: #3a3b42; position: relative; flex: none; transition: background .15s; }
+.switch { width: 56px; height: 34px; border-radius: 999px; background: var(--a-off); position: relative; flex: none; transition: background .15s; }
 .switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 28px; height: 28px; border-radius: 50%; background: #fff; transition: transform .15s; }
 [aria-pressed="true"] > .switch { background: var(--a-g); } [aria-pressed="true"] > .switch::after { transform: translateX(22px); }
 .info { display: flex; gap: 12px; padding: 14px 16px; font-size: 16px; color: var(--a-mut); } .info + .info { border-top: 1px solid var(--a-line); }
@@ -123,16 +123,25 @@ button, select, input { font: inherit; }
 .sheet .primarybtn { min-height: 84px; font-size: 22px; }
 .primarybtn.alt { background: var(--a-card); color: var(--a-fg); box-shadow: inset 0 0 0 3px var(--a-y); }
 #user .armed { outline: 5px solid #64d2ff; outline-offset: 3px; }
-.primarybtn { width: 100%; min-height: 60px; border-radius: 18px; border: 0; background: var(--a-y); color: #000; font-weight: 700; font-size: 20px; cursor: pointer; }
-.tabbar { display: grid; grid-template-columns: repeat(2, 1fr); border-top: 1px solid var(--a-line); background: #111215f2;
+.primarybtn { width: 100%; min-height: 60px; border-radius: 18px; border: 0; background: var(--a-y); color: var(--a-on); font-weight: 700; font-size: 20px; cursor: pointer; }
+.tabbar { display: grid; grid-template-columns: repeat(2, 1fr); border-top: 1px solid var(--a-line); background: var(--a-bar);
   padding: 6px max(8px, env(safe-area-inset-right, 0px)) max(8px, env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px)); }
-.tab { display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 60px; justify-content: center; border: 0; background: none; color: #8e8e96; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 12px; }
+.tab { display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 60px; justify-content: center; border: 0; background: none; color: var(--a-tab); font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 12px; }
 .tab svg { width: 26px; height: 26px; }
-.tab[aria-current="page"] { color: var(--a-y); }
+.tab[aria-current="page"] { color: var(--a-y); background: var(--a-card2); }
 #user :focus-visible { outline: 4px solid var(--a-y); outline-offset: 3px; }
 #flash { position: fixed; inset: 0; pointer-events: none; border: 0 solid var(--danger); transition: border-width .08s; z-index: 5; }
 #flash.l1 { border-width: 14px; }
 #flash.l2 { border-width: 6px; border-color: #ffd60a; }
+/* Colour themes (Settings > Colori). All text pairs are >= 7:1 (WCAG 1.4.6 AAA). */
+html[data-look="bianco"] #user { --a-y:#ffffff; --a-mut:#d0d0d6; --a-tab:#c8c8ce; --a-on:#000; }
+html[data-look="bianco"] #flash.l2 { border-color: #ffffff; }
+html[data-look="chiaro"] #user { --a-bg:#ffffff; --a-card:#f1f1f3; --a-card2:#e2e2e6; --a-line:#8a8a90; --a-fg:#000000; --a-mut:#2e2e33; --a-tab:#3a3a40;
+  --a-y:#000000; --a-on:#ffffff; --a-g:#006b2e; --a-o:#8a4300; --a-r:#b0001b; --a-l1:#ffe3e6; --a-bar:#fffffff2; --a-off:#76767c; }
+html[data-look="chiaro"] .card, html[data-look="chiaro"] .tile, html[data-look="chiaro"] .group { border: 2px solid #000; }
+html[data-look="chiaro"] .gobtn { box-shadow: inset 0 0 0 5px #000, 0 8px 24px #0003; }
+html[data-look="chiaro"] #flash.l1 { border-color: #b0001b; } html[data-look="chiaro"] #flash.l2 { border-color: #000; }
+@media (min-width: 600px) { html[data-look="chiaro"] #user { background: #d8d8dc; } }
 @media (prefers-reduced-motion: reduce) { #flash, .card, .switch, .switch::after { transition: none; } .gobtn.on { animation: none; } .gobtn:active, .tile:active { transform: none; } }
 
 /* ---------- jury mode ---------- */
@@ -189,7 +198,7 @@ table.lv td, table.lv th { text-align: left; padding: 6px 4px; border-bottom: 1p
 <!-- ================= USER MODE ================= -->
 <main id="user" aria-label="Eco Fidato">
  <div class="app">
-  <header class="appbar"><span class="appicon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="2.2" fill="#000"/><path d="M7.8 7.8a6 6 0 0 0 0 8.4M16.2 7.8a6 6 0 0 1 0 8.4M4.9 4.9a10 10 0 0 0 0 14.2M19.1 4.9a10 10 0 0 1 0 14.2"/></svg></span><span class="apptitle">Eco Fidato</span></header>
+  <header class="appbar"><span class="appicon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="2.2" fill="currentColor"/><path d="M7.8 7.8a6 6 0 0 0 0 8.4M16.2 7.8a6 6 0 0 1 0 8.4M4.9 4.9a10 10 0 0 0 0 14.2M19.1 4.9a10 10 0 0 1 0 14.2"/></svg></span><span class="apptitle">Eco Fidato</span></header>
 
   <div class="screen" id="mainPads">
     <section class="card" id="uCard" aria-label="Stato">
@@ -224,6 +233,7 @@ table.lv td, table.lv th { text-align: left; padding: 6px 4px; border-bottom: 1p
     </div>
     <p class="eyebrow grouplabel">Accessibilità</p>
     <div class="group">
+      <button class="row" id="prefLook" type="button"><span class="ti" style="background:#ffd60a" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v18" /><path d="M12 3a9 9 0 0 1 0 18z" fill="#000"/></svg></span><span class="tt"><b>Colori</b><span>Per chi vede un po'</span></span><span class="val" id="prefLookL">Giallo su nero</span></button>
       <button class="row" id="prefDepth" type="button" aria-pressed="true"><span class="ti" style="background:#bf5af2" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 8l7-5 7 5M5 16l7 5 7-5"/></svg></span><span class="tt"><b>Ostacoli senza nome</b><span>Pali, gradini, cantieri. Scarica qualche decina di MB la prima volta</span></span><span class="switch" aria-hidden="true"></span></button>
       <button class="row" id="prefGuide" type="button" aria-pressed="false"><span class="ti" style="background:#64d2ff" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11V5a2 2 0 0 1 4 0v6"/><path d="M13 9a2 2 0 0 1 4 0v4a6 6 0 0 1-6 6h-1a5 5 0 0 1-4-2l-2-3a1.6 1.6 0 0 1 2.6-1.9L9 14"/></svg></span><span class="tt"><b>Guida vocale ai tasti</b><span id="prefGuideL">Un tocco ascolti, due tocchi attivi</span></span><span class="switch" aria-hidden="true"></span></button>
     </div>
@@ -407,9 +417,9 @@ const S = {
   simT0: performance.now(), detBusy: false, lastDetT: 0,
 };
 const $ = id => document.getElementById(id);
-const APP_VERSION = '0.5.3';
+const APP_VERSION = '0.6.0';
 const IS_APP = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true || /github\.io$/.test(location.hostname);
-const P = { rate: 1, prud: 1, vib: true, guide: null, depth: true };
+const P = { rate: 1, prud: 1, vib: true, guide: null, depth: true, look: 'giallo' };
 try { Object.assign(P, JSON.parse(localStorage.getItem('ecoFidatoPrefs') || '{}')); } catch (e) {}
 const savePrefs = () => { try { localStorage.setItem('ecoFidatoPrefs', JSON.stringify(P)); } catch (e) {} };
 const view = $('view'), vctx = view.getContext('2d');
@@ -601,7 +611,7 @@ function feedback(now) {
   if (top && top.state === 'maybe' && lvl === 2 && top.trust < 0.15) { top = null; lvl = 9; }
   // the red/yellow alert colours belong to the user's guidance only: never while guidance is off
   // (the simulated scene keeps running in the background for the jury console)
-  const showAlert = top && S.guiding;
+  const showAlert = top && S.guiding && $('askSR').hidden && $('prefs').hidden;
   const flash = $('flash'); flash.className = showAlert ? (lvl === 1 ? 'l1' : 'l2') : '';
   $('uCard').className = 'card' + (showAlert ? ' l' + lvl : '');
   $('saying').className = 'saying' + (top ? ' l' + lvl : '');
@@ -1165,18 +1175,28 @@ setInterval(() => beaconTick(performance.now()), 1000 / 60 * 4);
 
 // ------------------------------------------------------------------ personal settings (personalisation matters: Mobilio)
 const RATES = [[1, 'Voce normale'], [1.35, 'Voce veloce'], [0.8, 'Voce lenta']];
+// Themes: yellow/black (default, 14:1), white/black (18:1, for cloudy media: Legge 1985), black/white (21:1, positive polarity: Piepenbrock 2013)
+const LOOKS = [['giallo', 'Giallo su nero', '#0a0a0c'], ['bianco', 'Bianco su nero', '#0a0a0c'], ['chiaro', 'Nero su bianco', '#ffffff']];
+function applyLook() {
+  const l = LOOKS.find(x => x[0] === P.look) || LOOKS[0];
+  if (l[0] === 'giallo') document.documentElement.removeAttribute('data-look'); else document.documentElement.setAttribute('data-look', l[0]);
+  const m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute('content', l[2]);
+}
 function syncPrefs() {
   $('prefRateL').textContent = (RATES.find(r => r[0] === P.rate) || RATES[0])[1];
   $('prefPrudL').textContent = P.prud > 1 ? 'Avvisi prudenti' : 'Avvisi normali';
   $('prefVibL').textContent = P.vib ? 'Vibrazione sì' : 'Vibrazione no'; $('prefVib').setAttribute('aria-pressed', String(P.vib));
   if ($('prefGuide')) $('prefGuide').setAttribute('aria-pressed', String(!!P.guide));
   if ($('prefDepth')) $('prefDepth').setAttribute('aria-pressed', String(!!P.depth));
+  if ($('prefLookL')) $('prefLookL').textContent = (LOOKS.find(l => l[0] === P.look) || LOOKS[0])[1];
+  applyLook();
 }
 function sayPref(t) { audioInit(); S.speakAnyway = true; say(t); S.speakAnyway = false; vibrate(20); }
-$('toPrefs').addEventListener('click', () => { $('mainPads').hidden = true; $('prefs').hidden = false; $('toPrefs').setAttribute('aria-expanded', 'true'); syncPrefs(); $('prefRate').focus(); sayPref('Impostazioni. Velocità voce, prudenza, vibrazione, e il pulsante Fatto.'); });
+$('toPrefs').addEventListener('click', () => { $('mainPads').hidden = true; $('prefs').hidden = false; $('toPrefs').setAttribute('aria-expanded', 'true'); syncPrefs(); $('prefRate').focus(); sayPref('Impostazioni. Velocità voce, prudenza, vibrazione, colori, e il pulsante Fatto.'); });
 $('prefClose').addEventListener('click', () => { $('prefs').hidden = true; $('mainPads').hidden = false; $('toPrefs').setAttribute('aria-expanded', 'false'); $('padWhat').focus(); savePrefs(); sayPref('Regolazioni salvate.'); });
 $('prefRate').addEventListener('click', () => { const i = RATES.findIndex(r => r[0] === P.rate); P.rate = RATES.at((i + 1) % RATES.length)[0]; savePrefs(); syncPrefs(); sayPref($('prefRateL').textContent); });
 $('prefPrud').addEventListener('click', () => { P.prud = P.prud > 1 ? 1 : 1.3; savePrefs(); syncPrefs(); sayPref($('prefPrudL').textContent); });
+$('prefLook').addEventListener('click', () => { const i = LOOKS.findIndex(l => l[0] === P.look); P.look = LOOKS.at((i + 1) % LOOKS.length)[0]; savePrefs(); syncPrefs(); sayPref($('prefLookL').textContent); });
 $('prefVib').addEventListener('click', () => { P.vib = !P.vib; savePrefs(); syncPrefs(); if (P.vib) vibrate(80); sayPref($('prefVibL').textContent + (VIB_OK ? '' : '. Questo telefono non vibra dal browser.')); });
 syncPrefs();
 
