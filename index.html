@@ -124,7 +124,7 @@ button, select, input { font: inherit; }
 .primarybtn.alt { background: var(--a-card); color: var(--a-fg); box-shadow: inset 0 0 0 3px var(--a-y); }
 #user .armed { outline: 5px solid #64d2ff; outline-offset: 3px; }
 .primarybtn { width: 100%; min-height: 60px; border-radius: 18px; border: 0; background: var(--a-y); color: #000; font-weight: 700; font-size: 20px; cursor: pointer; }
-.tabbar { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--a-line); background: #111215f2;
+.tabbar { display: grid; grid-template-columns: repeat(2, 1fr); border-top: 1px solid var(--a-line); background: #111215f2;
   padding: 6px max(8px, env(safe-area-inset-right, 0px)) max(8px, env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px)); }
 .tab { display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 60px; justify-content: center; border: 0; background: none; color: #8e8e96; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 12px; }
 .tab svg { width: 26px; height: 26px; }
@@ -248,7 +248,7 @@ table.lv td, table.lv th { text-align: left; padding: 6px 4px; border-bottom: 1p
   <nav class="tabbar" aria-label="Sezioni">
     <button class="tab" id="tabHome" type="button" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg><span>Guida</span></button>
     <button class="tab" id="toPrefs" type="button" aria-expanded="false" aria-controls="prefs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg><span>Impostazioni</span></button>
-    <button class="tab" id="toJury" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Giuria</span></button>
+    <button id="toJury" type="button" hidden>Console di prova</button>
   </nav>
  </div>
 </main>
@@ -407,7 +407,7 @@ const S = {
   simT0: performance.now(), detBusy: false, lastDetT: 0,
 };
 const $ = id => document.getElementById(id);
-const APP_VERSION = '0.5.1';
+const APP_VERSION = '0.5.2';
 const IS_APP = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true || /github\.io$/.test(location.hostname);
 const P = { rate: 1, prud: 1, vib: true, guide: null, depth: true };
 try { Object.assign(P, JSON.parse(localStorage.getItem('ecoFidatoPrefs') || '{}')); } catch (e) {}
@@ -1014,7 +1014,10 @@ $('jGo').addEventListener('click', () => setGuiding(!S.guiding));
 $('padWhat').addEventListener('click', () => { audioInit(); describeScene(); });
 $('jWhat').addEventListener('click', () => { audioInit(); describeScene(); });
 $('toJury').addEventListener('click', () => { $('user').hidden = true; $('jury').hidden = false; $('toUser').focus(); });
-$('toUser').addEventListener('click', () => { $('jury').hidden = true; $('user').hidden = false; $('toJury').focus(); });
+// the test console is not part of the user's app: it opens only from the address sabb19.github.io/Eco/#giuria
+const juryFromHash = () => { if (location.hash === '#giuria') $('toJury').click(); };
+window.addEventListener('hashchange', juryFromHash); juryFromHash();
+$('toUser').addEventListener('click', () => { $('jury').hidden = true; $('user').hidden = false; if (location.hash === '#giuria') history.replaceState(null, '', location.pathname); $('padGo').focus(); });
 $('optDark').addEventListener('change', e => { S.dark = e.target.checked; if (S.source !== 'sim') note(S.dark ? 'Il buio simulato vale solo per la scena simulata: con un video, prova a girarlo con poca luce.' : 'Pronto.'); });
 $('optCover').addEventListener('change', e => { S.cover = e.target.checked; });
 $('optBeat').addEventListener('change', e => { S.beat = e.target.checked; });
