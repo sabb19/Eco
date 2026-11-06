@@ -24,13 +24,14 @@ Senza internet l'app riapre l'ultima versione salvata.
 | File | Cosa fa |
 |---|---|
 | `index.html` | Tutta l'app: interfaccia, tracciamento, fiducia, avvisi, orientamento |
-| `model/` | Pesi del rilevatore COCO-SSD lite (estensione `.wasm` solo per compatibilità di hosting) |
+| `model/yolo11n.onnx` | Rilevatore principale YOLO11n (Ultralytics, 384 px, 11 MB). Licenza AGPL-3.0: va bene per un progetto aperto, per un uso commerciale serve la licenza Ultralytics |
+| `model/*.wasm` | Pesi di riserva COCO-SSD lite (estensione `.wasm` solo per compatibilità di hosting) |
 | `sw.js` | Service worker: carica sempre la versione più recente, cache solo per l'offline |
 | `manifest.webmanifest`, `icons/` | Installazione come app |
 
 ## Come riconosce i pericoli
 
-- **Oggetti con un nome** (persone, bici, auto, panchine…): rilevatore COCO-SSD sul telefono, tracciamento con gestione delle occlusioni, stima di distanza e tempo all'impatto.
+- **Oggetti con un nome** (persone, bici, auto, panchine…): rilevatore YOLO11n sul telefono (onnxruntime-web, GPU se c'è, altrimenti CPU; COCO-SSD come riserva), tracciamento con gestione delle occlusioni, stima di distanza e tempo all'impatto.
 - **Ostacoli senza nome** (pali, gradini, cantieri): modello di profondità Depth Anything V2 Small in un worker, qualche immagine al secondo. Segnala ciò che sporge dal pavimento, vicino e davanti, anche senza sapere cos'è. Si scarica da Hugging Face la prima volta che avvii la guida; si spegne da Impostazioni.
 
 ## Accessibilità
