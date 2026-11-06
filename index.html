@@ -77,6 +77,21 @@ button, select, input { font: inherit; }
 .chip i { width: 9px; height: 9px; border-radius: 50%; background: var(--a-g); }
 .chip.mid i { background: var(--a-o); } .chip.bad i { background: var(--a-r); }
 #user .status { margin: 0; font-size: clamp(21px, 5.8vw, 26px); font-weight: 700; line-height: 1.25; min-height: 2.5em; color: var(--a-fg); }
+.xcam { position: relative; flex: 1 1 auto; min-height: 220px; border-radius: 22px; overflow: hidden; background: #000; }
+.xcam video, .xcam canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.xcross { position: absolute; left: 50%; top: 50%; width: 44px; height: 44px; margin: -22px 0 0 -22px; border: 3px solid #fff; border-radius: 50%; box-shadow: 0 0 0 2px #000; }
+.xtag { position: absolute; left: 10px; top: 10px; background: #ffd60a; color: #000; font-weight: 700; font-size: 14px; padding: 4px 10px; border-radius: 999px; }
+#explore { flex-shrink: 1; } #explore > .xcam { flex-shrink: 1; }
+.xstatus { min-height: 2.5em; }
+.keyrow { display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; }
+.keyrow label { display: flex; flex-direction: column; } .keyrow label b { font-size: 19px; } .keyrow label span { font-size: 15px; color: var(--a-mut); }
+.keyrow input { min-height: 56px; border-radius: 14px; border: 2px solid var(--a-line); background: var(--a-bg); color: var(--a-fg); font-size: 18px; padding: 0 14px; }
+.keybtns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } .keybtns .primarybtn { min-height: 56px; font-size: 18px; }
+.xgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.xbtn { min-height: 96px; border-radius: 20px; border: 0; background: var(--a-card); color: var(--a-fg); display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px; padding: 12px 14px; text-align: left; cursor: pointer; }
+.xbtn svg { width: 28px; height: 28px; color: var(--a-y); } .xbtn b { font-size: 21px; } .xbtn span { font-size: 14px; color: var(--a-mut); }
+.xbtn[aria-pressed="true"] { background: var(--a-y); color: var(--a-on); } .xbtn[aria-pressed="true"] svg, .xbtn[aria-pressed="true"] span { color: var(--a-on); }
+.xbtn.busy { box-shadow: inset 0 0 0 3px var(--a-y); }
 .gview { position: absolute; inset: 0; z-index: 3; background: #000; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
 .gview video, .gview canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .gview.nocam video, .gview.nocam canvas { display: none; }
@@ -136,7 +151,7 @@ button, select, input { font: inherit; }
 .primarybtn.alt { background: var(--a-card); color: var(--a-fg); box-shadow: inset 0 0 0 3px var(--a-y); }
 #user .armed { outline: 5px solid #64d2ff; outline-offset: 3px; }
 .primarybtn { width: 100%; min-height: 60px; border-radius: 18px; border: 0; background: var(--a-y); color: var(--a-on); font-weight: 700; font-size: 20px; cursor: pointer; }
-.tabbar { display: grid; grid-template-columns: repeat(2, 1fr); border-top: 1px solid var(--a-line); background: var(--a-bar);
+.tabbar { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--a-line); background: var(--a-bar);
   padding: 6px max(8px, env(safe-area-inset-right, 0px)) max(8px, env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px)); }
 .tab { display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 60px; justify-content: center; border: 0; background: none; color: var(--a-tab); font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 12px; }
 .tab svg { width: 26px; height: 26px; }
@@ -250,6 +265,14 @@ table.lv td, table.lv th { text-align: left; padding: 6px 4px; border-bottom: 1p
       <button class="row" id="prefDepth" type="button" aria-pressed="true"><span class="ti" style="background:#bf5af2" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 8l7-5 7 5M5 16l7 5 7-5"/></svg></span><span class="tt"><b>Ostacoli senza nome</b><span>Pali, gradini, cantieri. Scarica qualche decina di MB la prima volta</span></span><span class="switch" aria-hidden="true"></span></button>
       <button class="row" id="prefGuide" type="button" aria-pressed="false"><span class="ti" style="background:#64d2ff" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11V5a2 2 0 0 1 4 0v6"/><path d="M13 9a2 2 0 0 1 4 0v4a6 6 0 0 1-6 6h-1a5 5 0 0 1-4-2l-2-3a1.6 1.6 0 0 1 2.6-1.9L9 14"/></svg></span><span class="tt"><b>Guida vocale ai tasti</b><span id="prefGuideL">Un tocco ascolti, due tocchi attivi</span></span><span class="switch" aria-hidden="true"></span></button>
     </div>
+    <p class="eyebrow grouplabel">Intelligenza artificiale</p>
+    <div class="group">
+      <div class="keyrow">
+        <label for="aiKey"><b>Chiave AI (Gemini)</b><span id="aiKeyL">Serve per Leggi, Descrivi e Chiedi. Resta solo su questo telefono.</span></label>
+        <input id="aiKey" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Incolla qui la chiave">
+        <div class="keybtns"><button class="primarybtn" id="aiKeySave" type="button">Salva chiave</button><button class="primarybtn alt" id="aiKeyDel" type="button">Cancella</button></div>
+      </div>
+    </div>
     <p class="eyebrow grouplabel">Sicurezza</p>
     <div class="group">
       <div class="info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 4a3 3 0 0 1 6 0v17"/></svg><span>Non sostituisce il bastone o il cane guida. Quando non vede bene, te lo dice.</span></div>
@@ -268,6 +291,17 @@ table.lv td, table.lv th { text-align: left; padding: 6px 4px; border-bottom: 1p
     <button class="primarybtn alt" id="askNo" type="button">No, leggimi i tasti</button>
   </div>
 
+  <div class="screen" id="explore" hidden aria-label="Esplora">
+    <div class="xcam" aria-hidden="true"><video id="xVid" playsinline muted autoplay></video><canvas id="xBox"></canvas><span class="xcross"></span><span class="xtag" id="xTag" hidden>SIMULAZIONE</span></div>
+    <p class="status xstatus" id="xStatus" aria-live="polite">Inquadra qualcosa e scegli cosa vuoi sapere.</p>
+    <div class="xgrid">
+      <button class="xbtn" id="xWhat" type="button" aria-pressed="false" aria-describedby="xWhatD"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><b>Cos'è?</b><span id="xWhatD">L'oggetto al centro</span></button>
+      <button class="xbtn" id="xRead" type="button" aria-describedby="xReadD"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H4zM20 5h-4a2 2 0 0 0-2 2"/><path d="M20 5v13h-6"/></svg><b>Leggi</b><span id="xReadD">Il testo inquadrato</span></button>
+      <button class="xbtn" id="xDesc" type="button" aria-describedby="xDescD"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 15l5-5 4 4 3-3 6 6"/></svg><b>Descrivi</b><span id="xDescD">Tutta la scena</span></button>
+      <button class="xbtn" id="xAsk" type="button" aria-describedby="xAskD"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg><b>Chiedi</b><span id="xAskD">Fai una domanda a voce</span></button>
+    </div>
+  </div>
+
   <section class="gview" id="gView" hidden aria-label="Guida attiva">
     <video id="uVid" playsinline muted autoplay aria-hidden="true"></video>
     <canvas id="uBox" aria-hidden="true"></canvas>
@@ -283,6 +317,7 @@ table.lv td, table.lv th { text-align: left; padding: 6px 4px; border-bottom: 1p
 
   <nav class="tabbar" aria-label="Sezioni">
     <button class="tab" id="tabHome" type="button" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg><span>Guida</span></button>
+    <button class="tab" id="tabExplore" type="button" aria-controls="explore"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/><circle cx="12" cy="12" r="3.2"/></svg><span>Esplora</span></button>
     <button class="tab" id="toPrefs" type="button" aria-expanded="false" aria-controls="prefs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg><span>Impostazioni</span></button>
     <button id="toJury" type="button" hidden>Console di prova</button>
   </nav>
@@ -443,7 +478,7 @@ const S = {
   simT0: performance.now(), detBusy: false, lastDetT: 0,
 };
 const $ = id => document.getElementById(id);
-const APP_VERSION = '0.8.0';
+const APP_VERSION = '0.9.0';
 const IS_APP = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true || /github\.io$/.test(location.hostname);
 // In the real app the demo scene never runs by itself: its pedestrian and bike would trigger real alerts. Only the jury console can start it.
 if (IS_APP) S.source = 'idle';
@@ -1087,7 +1122,7 @@ function openGuideView(on) {
   if (on) { $('gStatus').textContent = $('uStatus').textContent; $('gView').classList.toggle('nocam', !P.cam); $('gStop').focus(); }
   else { try { uVid.srcObject = null; } catch (e) {} $('padGo').focus(); }
 }
-function drawGuideBoxes() {
+function drawGuideBoxes(ubox = $('uBox'), ubctx = ubox.getContext('2d')) {
   const dpr = Math.min(2, window.devicePixelRatio || 1), cw = ubox.clientWidth, ch = ubox.clientHeight; if (!cw || !ch) return;
   if (ubox.width !== Math.round(cw * dpr) || ubox.height !== Math.round(ch * dpr)) { ubox.width = Math.round(cw * dpr); ubox.height = Math.round(ch * dpr); }
   const sim = S.source === 'sim', vw = sim ? 640 : (vid.videoWidth || 640), vh = sim ? 480 : (vid.videoHeight || 480);
@@ -1110,11 +1145,124 @@ function drawGuideBoxes() {
 $('gStop').addEventListener('click', () => setGuiding(false));
 $('gWhat').addEventListener('click', () => { audioInit(); describeScene(); });
 
+// ------------------------------------------------------------------ Esplora: point the camera and ask (Seeing AI-style)
+// 'Cos'è?' runs on the phone (YOLO, offline). Leggi / Descrivi / Chiedi send ONE photo to the AI only when pressed.
+// The Gemini key is typed in Settings and stored only in this phone's localStorage: never in the code or on GitHub.
+const GEMINI_MODEL = 'gemini-flash-latest';
+// Preferred route: the Supabase function 'eco-ai' holds the key for every phone. Empty until the project exists.
+const ECO_AI_URL = '', ECO_AI_PUB = '';
+const aiKey = () => { try { return localStorage.getItem('ecoAiKey') || ''; } catch (e) { return ''; } };
+const AI_BASE = 'Rispondi in italiano a una persona cieca che sta usando la fotocamera del telefono. Frasi brevi e semplici, adatte alla sintesi vocale: niente elenchi puntati, niente markdown, niente emoji. Di\' solo quello che vedi davvero. Se non sei sicuro dillo con parole come "forse" o "sembra". Se l\'immagine è buia, mossa o tagliata, dillo e suggerisci come inquadrare meglio (più vicino, più luce, più a sinistra).';
+const AI_PROMPTS = {
+  read: 'Leggi il testo visibile nell\'immagine, parola per parola, nell\'ordine in cui si legge. Se ci sono molti testi, prima il più grande o importante. Se non c\'è testo leggibile, dillo in una frase.',
+  describe: 'Descrivi la scena in 2 o 3 frasi: prima cosa c\'è davanti e quanto è vicino, poi il resto. Segnala subito eventuali ostacoli o pericoli.',
+  ask: 'Rispondi alla domanda dell\'utente sull\'immagine in 1 o 2 frasi. Domanda: '
+};
+const xVid = $('xVid'), xbctx = $('xBox').getContext('2d');
+const X = { what: false, last: '', cand: '', candN: 0, lastSaid: 0, emptySince: 0, busy: false };
+function xSay(t, interrupt) { $('xStatus').textContent = t; S.speakAnyway = true; say(t, interrupt); S.speakAnyway = false; }
+function exploreEnter() {
+  $('mainPads').hidden = true; $('prefs').hidden = true; $('explore').hidden = false; setTab('explore');
+  $('xTag').hidden = S.source !== 'sim';
+  if (IS_APP && S.source !== 'camera') { if (S.source === 'sim') { S.source = 'idle'; resetTracker(); } $('srcCam').click(); }
+  else if (S.source === 'camera') ensureModel();
+  sayPref('Esplora. Inquadra qualcosa. Tasti: Cos\'è, Leggi, Descrivi, Chiedi.');
+}
+function exploreLeave() {
+  if ($('explore').hidden) return;
+  $('explore').hidden = true; X.what = false; $('xWhat').setAttribute('aria-pressed', 'false');
+  try { xVid.srcObject = null; } catch (e) {}
+  if (IS_APP && !S.guiding && S.source === 'camera') { stopVideo(); S.source = 'idle'; resetTracker(); }
+}
+// the object under the centre ring (or the closest one), said again only when it changes
+function exploreTick(now) {
+  if (!X.what || X.busy || now - (X.lastTick || 0) < 300) return; X.lastTick = now;
+  const vis = S.tracks.filter(t => t.state === 'seen' && t.cls !== 'obstacle');
+  const inC = vis.filter(t => { const b = boxOf(t); return 0.5 > b.x && 0.5 < b.x + b.w && 0.5 > b.y && 0.5 < b.y + b.h; });
+  inC.sort((a, b) => boxOf(a).w * boxOf(a).h - boxOf(b).w * boxOf(b).h);
+  const t = inC[0];
+  if (t) {
+    X.emptySince = 0; const name = nameOf(t.cls);
+    if (name === X.cand) X.candN++; else { X.cand = name; X.candN = 1; }
+    if (X.candN >= 2 && name !== X.last) { X.last = name; X.lastSaid = now; xSay(name.charAt(0).toUpperCase() + name.slice(1), true); beep({ freq: 1046, dur: 0.06, gain: 0.15 }); if (P.vib) vibrate(25); }
+  } else {
+    if (!X.emptySince) X.emptySince = now;
+    if (now - X.emptySince > 2500 && now - X.lastSaid > 4000) {
+      X.lastSaid = now; X.last = '';
+      if (vis.length) { const n = vis.sort((a, b) => Math.abs(a.cx - 0.5) - Math.abs(b.cx - 0.5))[0]; xSay('Niente al centro. ' + nameOf(n.cls).replace(/^./, c => c.toUpperCase()) + ' ' + (n.cx < 0.5 ? 'più a sinistra' : 'più a destra') + '.'); }
+      else xSay('Niente al centro.');
+    }
+  }
+}
+function syncKey() { const k = aiKey(); $('aiKey').value = ''; $('aiKey').placeholder = k ? 'Chiave salvata (…' + k.slice(-4) + ')' : 'Incolla qui la chiave'; $('aiKeyDel').hidden = !k; }
+$('aiKeySave').addEventListener('click', () => { const v = $('aiKey').value.trim(); if (!v) { sayPref('Prima incolla la chiave nel campo.'); $('aiKey').focus(); return; }
+  try { localStorage.setItem('ecoAiKey', v); } catch (e) {} syncKey(); sayPref('Chiave salvata su questo telefono.'); });
+$('aiKeyDel').addEventListener('click', () => { try { localStorage.removeItem('ecoAiKey'); } catch (e) {} syncKey(); sayPref('Chiave cancellata.'); });
+syncKey();
+$('tabExplore').addEventListener('click', () => { if ($('explore').hidden) exploreEnter(); });
+$('xWhat').addEventListener('click', () => {
+  X.what = !X.what; X.last = ''; X.cand = ''; X.emptySince = 0; $('xWhat').setAttribute('aria-pressed', String(X.what));
+  if (X.what && !S.model && S.source !== 'sim') ensureModel();
+  xSay(X.what ? 'Cos\'è attivo. Muovi piano il telefono: ti dico l\'oggetto al centro.' : 'Cos\'è spento.', true);
+});
+function grabJpeg() {
+  const src = S.source === 'sim' ? scene : vid, W = S.source === 'sim' ? 640 : vid.videoWidth, H = S.source === 'sim' ? 480 : vid.videoHeight;
+  if (!W || !H) return null;
+  const k = Math.min(1, 1024 / Math.max(W, H)), c = document.createElement('canvas'); c.width = Math.round(W * k); c.height = Math.round(H * k);
+  c.getContext('2d').drawImage(src, 0, 0, c.width, c.height); return c.toDataURL('image/jpeg', 0.8).split(',')[1];
+}
+async function askAI(mode, question) {
+  if (X.busy) return;
+  const key = aiKey();
+  if (!key && !ECO_AI_URL) { xSay('Per questa funzione serve la chiave AI. Mettila in Impostazioni, alla voce Chiave AI. Cos\'è funziona anche senza.', true); return; }
+  if (!navigator.onLine) { xSay('Serve internet per questa funzione. Cos\'è funziona anche offline.', true); return; }
+  let first = false; try { first = !localStorage.getItem('ecoAiOk'); localStorage.setItem('ecoAiOk', '1'); } catch (e) {}
+  const img = grabJpeg(); if (!img) { xSay('La fotocamera non è pronta. Riprova tra un attimo.', true); return; }
+  const btn = { read: 'xRead', describe: 'xDesc', ask: 'xAsk' }[mode];
+  X.busy = true; $(btn).classList.add('busy');
+  xSay((first ? 'Invio una foto all\'intelligenza artificiale, solo ora che l\'hai chiesto. ' : '') + 'Un attimo.', true);
+  const tick = setInterval(() => beep({ freq: 520, dur: 0.05, gain: 0.08 }), 900);
+  try {
+    const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 20000);
+    const viaServer = !key && ECO_AI_URL;
+    const res = viaServer
+      ? await fetch(ECO_AI_URL, { method: 'POST', signal: ctl.signal, headers: { 'Content-Type': 'application/json', apikey: ECO_AI_PUB, Authorization: 'Bearer ' + ECO_AI_PUB },
+          body: JSON.stringify({ mode, question: question || '', image: img }) })
+      : await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + GEMINI_MODEL + ':generateContent', { method: 'POST', signal: ctl.signal,
+          headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
+          body: JSON.stringify({ contents: [{ parts: [{ inline_data: { mime_type: 'image/jpeg', data: img } }, { text: AI_BASE + ' ' + AI_PROMPTS[mode] + (mode === 'ask' ? (question || '').slice(0, 300) : '') }] }],
+            generationConfig: { maxOutputTokens: 400, temperature: 0.2 } }) });
+    clearTimeout(to);
+    const j = await res.json().catch(() => ({}));
+    if (res.status === 400 || res.status === 403) { xSay('La chiave AI non funziona. Controllala in Impostazioni.', true); throw 0; }
+    if (res.status === 429) { xSay('Troppe richieste per oggi con la chiave gratuita. Riprova più tardi.', true); throw 0; }
+    const text = viaServer ? (j.text || '').trim() : ((j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts) || []).map(p => p.text || '').join(' ').trim();
+    if (!res.ok || !text) throw new Error('HTTP ' + res.status);
+    xSay(text, true);
+  } catch (e) { if (e !== 0) xSay(e && e.name === 'AbortError' ? 'Ci sta mettendo troppo. Riprova.' : 'Non riesco a rispondere adesso. Riprova tra poco.', true); }
+  clearInterval(tick); X.busy = false; $(btn).classList.remove('busy');
+}
+$('xRead').addEventListener('click', () => askAI('read'));
+$('xDesc').addEventListener('click', () => askAI('describe'));
+$('xAsk').addEventListener('click', () => {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { xSay('Su questo telefono non posso ascoltare la voce dal browser. Usa Descrivi o Leggi.', true); return; }
+  if (!aiKey() && !ECO_AI_URL) { askAI('ask'); return; }
+  const rec = new SR(); rec.lang = 'it-IT'; rec.interimResults = false; rec.maxAlternatives = 1;
+  try { speechSynthesis.cancel(); } catch (e) {}
+  beep({ freq: 880, dur: 0.08 }); $('xStatus').textContent = 'Ti ascolto…'; $('xAsk').classList.add('busy');
+  rec.onresult = e => { const q = e.results[0][0].transcript; $('xAsk').classList.remove('busy'); $('xStatus').textContent = '«' + q + '»'; askAI('ask', q); };
+  rec.onerror = () => { $('xAsk').classList.remove('busy'); xSay('Non ho sentito. Riprova.', true); };
+  rec.onend = () => $('xAsk').classList.remove('busy');
+  try { rec.start(); } catch (e) { $('xAsk').classList.remove('busy'); }
+});
+
 // ------------------------------------------------------------------ main loop
 let lastHealth = 0, lastMetrics = 0;
 function loop() {
   const now = performance.now();
   if (!$('gView').hidden && P.cam) drawGuideBoxes();
+  if (!$('explore').hidden) { drawGuideBoxes($('xBox'), xbctx); if (S.source === 'camera' && xVid.srcObject !== vid.srcObject) { xVid.srcObject = vid.srcObject; xVid.play().catch(() => {}); } exploreTick(now); }
   if (S.source === 'sim') {
     const t = (now - S.simT0) / 1000; const objs = simObjects(t); drawSim(objs); if (P.depth) simDepth(objs, now);
     const tc = performance.now(); pipeline(simDetect(objs), tc);
@@ -1334,7 +1482,7 @@ function syncPrefs() {
   applyLook();
 }
 function sayPref(t) { audioInit(); S.speakAnyway = true; say(t); S.speakAnyway = false; vibrate(20); }
-$('toPrefs').addEventListener('click', () => { $('mainPads').hidden = true; $('prefs').hidden = false; $('toPrefs').setAttribute('aria-expanded', 'true'); syncPrefs(); $('prefRate').focus(); sayPref('Impostazioni. Velocità voce, prudenza, vibrazione, colori, e il pulsante Fatto.'); });
+$('toPrefs').addEventListener('click', () => { exploreLeave(); $('mainPads').hidden = true; $('prefs').hidden = false; $('toPrefs').setAttribute('aria-expanded', 'true'); syncPrefs(); $('prefRate').focus(); sayPref('Impostazioni. Velocità voce, prudenza, vibrazione, colori, e il pulsante Fatto.'); });
 $('prefClose').addEventListener('click', () => { $('prefs').hidden = true; $('mainPads').hidden = false; $('toPrefs').setAttribute('aria-expanded', 'false'); $('padWhat').focus(); savePrefs(); sayPref('Regolazioni salvate.'); });
 $('prefRate').addEventListener('click', () => { const i = RATES.findIndex(r => r[0] === P.rate); P.rate = RATES.at((i + 1) % RATES.length)[0]; savePrefs(); syncPrefs(); sayPref($('prefRateL').textContent); });
 $('prefPrud').addEventListener('click', () => { P.prud = P.prud > 1 ? 1 : 1.3; savePrefs(); syncPrefs(); sayPref($('prefPrudL').textContent); });
@@ -1388,11 +1536,11 @@ $('askNo').addEventListener('click', () => { $('askSR').hidden = true; setGuide(
 if (P.guide === null) askScreenReader();
 
 $('appVer').textContent = 'Eco Fidato · versione ' + APP_VERSION + (IS_APP ? ' · app' : ' · anteprima');
-function setTab(prefsOpen) { $('tabHome').toggleAttribute('aria-current', false); $('toPrefs').toggleAttribute('aria-current', false);
-  (prefsOpen ? $('toPrefs') : $('tabHome')).setAttribute('aria-current', 'page'); }
+function setTab(which) { for (const id of ['tabHome', 'tabExplore', 'toPrefs']) $(id).removeAttribute('aria-current');
+  $(which === 'explore' ? 'tabExplore' : which ? 'toPrefs' : 'tabHome').setAttribute('aria-current', 'page'); }
 $('toPrefs').addEventListener('click', () => setTab(true));
 $('prefClose').addEventListener('click', () => setTab(false));
-$('tabHome').addEventListener('click', () => { if (!$('prefs').hidden) $('prefClose').click(); else $('padGo').focus(); });
+$('tabHome').addEventListener('click', () => { if (!$('explore').hidden) { exploreLeave(); $('mainPads').hidden = false; setTab(false); $('padGo').focus(); sayPref('Guida.'); } else if (!$('prefs').hidden) $('prefClose').click(); else $('padGo').focus(); });
 
 if (!VIB_OK) logMsg('Vibrazione non disponibile su questo browser: restano suoni e voce.', 2);
 else if (VIB_IOS) logMsg('iPhone: vibrazione tramite il trucco dell\'interruttore (iOS 18 o successivo).', 1);
